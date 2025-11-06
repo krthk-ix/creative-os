@@ -106,7 +106,7 @@ export default function Settings() {
 
   return (
     <div className="h-screen overflow-auto bg-white dark:bg-black">
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-8">
         <div className="mb-6">
           <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Settings</h1>
           <p className="text-gray-500 dark:text-gray-400 text-xs">Manage your application preferences</p>

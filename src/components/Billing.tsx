@@ -103,31 +103,31 @@ export default function Billing() {
 
   return (
     <div className="h-screen overflow-auto bg-white dark:bg-black">
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
         <div className="mb-6">
           <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Billing</h1>
           <p className="text-gray-500 dark:text-gray-400 text-xs">Manage your subscription and billing</p>
         </div>
 
         {currentPlan && (
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 mb-6 text-white">
-            <div className="flex items-start justify-between mb-4">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded-xl p-4 md:p-6 mb-6 text-white">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h2 className="text-xl font-bold">{currentPlan.name} Plan</h2>
+                  <h2 className="text-lg md:text-xl font-bold">{currentPlan.name} Plan</h2>
                   <span className="px-2 py-0.5 bg-white/20 rounded text-xs font-medium">Active</span>
                 </div>
                 <p className="text-white/80 text-sm">{currentPlan.description}</p>
               </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold">${currentPlan.price}</div>
+              <div className="text-left sm:text-right">
+                <div className="text-2xl md:text-3xl font-bold">${currentPlan.price}</div>
                 <div className="text-white/60 text-xs">per {currentPlan.interval}</div>
               </div>
             </div>
             {subscription && (
-              <div className="flex items-center gap-4 text-xs text-white/60">
+              <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs text-white/60">
                 <span>Started: {new Date(subscription.current_period_start).toLocaleDateString()}</span>
-                <span>•</span>
+                <span className="hidden sm:inline">•</span>
                 <span>Renews: {new Date(subscription.current_period_end).toLocaleDateString()}</span>
                 {subscription.cancel_at_period_end && (
                   <>

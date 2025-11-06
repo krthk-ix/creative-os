@@ -108,7 +108,7 @@ export default function Support() {
 
   return (
     <div className="h-screen overflow-auto bg-white dark:bg-black">
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Support</h1>

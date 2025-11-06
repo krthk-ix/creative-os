@@ -105,8 +105,8 @@ export default function Projects() {
 
   return (
     <div className="h-screen flex flex-col bg-white dark:bg-black">
-      <header className="border-b border-gray-200 dark:border-gray-800 px-6 py-3">
-        <div className="flex items-center justify-between">
+      <header className="border-b border-gray-200 dark:border-gray-800 px-4 md:px-6 py-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Projects</h2>
             <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">
@@ -137,7 +137,7 @@ export default function Projects() {
 
         {showFilters && (
           <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 space-y-3 border border-gray-200 dark:border-gray-800">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
@@ -163,7 +163,7 @@ export default function Projects() {
         )}
       </header>
 
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-4 md:p-6">
         {loading ? (
           <div className="text-center text-gray-400 py-12">Loading generations...</div>
         ) : filteredGenerations.length === 0 ? (
@@ -179,7 +179,7 @@ export default function Projects() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {filteredGenerations.map((generation) => (
               <div
                 key={generation.id}
