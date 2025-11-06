@@ -79,6 +79,7 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
     if (!user) return;
 
     setIsGenerating(true);
+    setIsExpanded(false);
 
     try {
       const { data: generationData, error } = await supabase.from('generations').insert({
