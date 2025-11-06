@@ -109,17 +109,17 @@ export default function Support() {
   return (
     <div className="h-screen overflow-auto bg-white dark:bg-black">
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Support</h1>
-            <p className="text-gray-500 dark:text-gray-400">Get help when you need it</p>
+            <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Support</h1>
+            <p className="text-gray-500 dark:text-gray-400 text-xs">Get help when you need it</p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl flex items-center gap-2 hover:opacity-90 transition-opacity font-medium"
+            className="px-3 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-black rounded-lg flex items-center gap-1.5 hover:opacity-90 transition-opacity text-sm"
           >
-            <Plus size={20} />
-            New Ticket
+            <Plus size={14} />
+            New
           </button>
         </div>
 
@@ -159,7 +159,7 @@ export default function Support() {
         </div>
 
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Your Tickets</h2>
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Your Tickets</h2>
           {tickets.length === 0 ? (
             <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-12 text-center">
               <MessageSquare className="mx-auto mb-4 text-gray-300 dark:text-gray-700" size={48} />

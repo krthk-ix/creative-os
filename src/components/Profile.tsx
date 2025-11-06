@@ -151,27 +151,27 @@ export default function Profile() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Company Name
               </label>
               <input
                 type="text"
                 value={profile.company_name || ''}
                 onChange={(e) => setProfile({ ...profile, company_name: e.target.value })}
-                className="w-full px-4 py-3 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+                className="w-full px-3 py-2 text-sm bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-gray-900 dark:focus:ring-white"
                 placeholder="Enter your company name"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Bio
               </label>
               <textarea
                 value={profile.bio || ''}
                 onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                rows={4}
-                className="w-full px-4 py-3 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white resize-none"
+                rows={3}
+                className="w-full px-3 py-2 text-sm bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-gray-900 dark:focus:ring-white resize-none"
                 placeholder="Tell us about yourself..."
               />
             </div>
@@ -180,9 +180,9 @@ export default function Profile() {
               <button
                 onClick={saveProfile}
                 disabled={saving}
-                className="w-full sm:w-auto px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-4 py-2 text-sm bg-gray-900 dark:bg-white text-white dark:text-black rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                <Save size={18} />
+                <Save size={14} />
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
             </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Bell, Globe, Lock, Trash2, Save, Database, Zap, Download } from 'lucide-react';
+import { Bell, Globe, Lock, Trash2, Save, Database, Zap, Download, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { supabase } from '../lib/supabase';
 
 interface Settings {
@@ -15,6 +16,7 @@ interface Settings {
 
 export default function Settings() {
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [settings, setSettings] = useState<Settings>({
     email_notifications: true,
     weekly_summary: true,
@@ -105,9 +107,9 @@ export default function Settings() {
   return (
     <div className="h-screen overflow-auto bg-white dark:bg-black">
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Settings</h1>
-          <p className="text-gray-500 dark:text-gray-400">Manage your application preferences</p>
+        <div className="mb-6">
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Settings</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-xs">Manage your application preferences</p>
         </div>
 
         {message && (
@@ -145,8 +147,32 @@ export default function Settings() {
                   <option value="ja">Japanese</option>
                 </select>
               </div>
+              <div className="flex items-center justify-between pt-2">
+                <div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">Dark Mode</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    Switch between light and dark theme
+                  </div>
+                </div>
+                <button
+                  onClick={toggleTheme}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
+                >
+                  {theme === 'dark' ? (
+                    <>
+                      <Moon size={14} />
+                      <span className="text-xs font-medium text-gray-900 dark:text-white">Dark</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sun size={14} />
+                      <span className="text-xs font-medium text-gray-900 dark:text-white">Light</span>
+                    </>
+                  )}
+                </button>
+              </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Default Output Quality
                 </label>
                 <select
