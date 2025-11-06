@@ -1,8 +1,10 @@
-import { useState, useRef } from 'react';
-import { Upload, Sparkles, Maximize2 } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Upload, Sparkles, Maximize2, Check } from 'lucide-react';
 
 interface ResizePhotoOptionsProps {
   onGenerate: (data: Record<string, unknown>) => void;
+  preloadedImage?: string | null;
+  onImageUsed?: () => void;
 }
 
 interface SizePreset {
@@ -43,7 +45,7 @@ const socialMediaSizes: SizePreset[] = [
 
 type ViewMode = 'presets' | 'custom';
 
-export default function ResizePhotoOptions({ onGenerate }: ResizePhotoOptionsProps) {
+export default function ResizePhotoOptions({ onGenerate, preloadedImage, onImageUsed }: ResizePhotoOptionsProps) {
   const [inputImage, setInputImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('presets');
@@ -51,8 +53,19 @@ export default function ResizePhotoOptions({ onGenerate }: ResizePhotoOptionsPro
   const [customWidth, setCustomWidth] = useState(1920);
   const [customHeight, setCustomHeight] = useState(1080);
   const [selectedCategory, setSelectedCategory] = useState('Facebook');
+  const [isFromChain, setIsFromChain] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (preloadedImage) {
+      setImagePreview(preloadedImage);
+      setIsFromChain(true);
+      if (onImageUsed) {
+        onImageUsed();
+      }
+    }
+  }, [preloadedImage, onImageUsed]);
 
   const categories = Array.from(new Set(socialMediaSizes.map(s => s.category)));
   const filteredSizes = socialMediaSizes.filter(s => s.category === selectedCategory);
@@ -101,10 +114,11 @@ export default function ResizePhotoOptions({ onGenerate }: ResizePhotoOptionsPro
           onChange={handleImageChange}
           className="hidden"
         />
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          className="w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl hover:border-brand dark:hover:border-brand transition-all flex flex-col items-center justify-center gap-2 text-gray-500 dark:text-gray-400 hover:text-brand dark:hover:text-brand group"
-        >
+        <div className="relative">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl hover:border-brand dark:hover:border-brand transition-all flex flex-col items-center justify-center gap-2 text-gray-500 dark:text-gray-400 hover:text-brand dark:hover:text-brand group"
+          >
           {imagePreview ? (
             <div className="relative w-full h-full p-2">
               <img
@@ -120,7 +134,13 @@ export default function ResizePhotoOptions({ onGenerate }: ResizePhotoOptionsPro
               <span className="text-xs">Click to browse</span>
             </>
           )}
-        </button>
+          </button>
+          {isFromChain && imagePreview && (
+            <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1.5 shadow-lg">
+              <Check size={14} />
+            </div>
+          )}
+        </div>
         {inputImage && (
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
             {inputImage.name}
@@ -262,7 +282,7 @@ export default function ResizePhotoOptions({ onGenerate }: ResizePhotoOptionsPro
 
       <button
         onClick={handleGenerate}
-        disabled={!inputImage || (viewMode === 'presets' && !selectedPreset)}
+        disabled={(!inputImage && !imagePreview) || (viewMode === 'presets' && !selectedPreset)}
         className="relative w-full bg-brand hover:bg-brand/90 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg transition-colors overflow-hidden group"
       >
         <span className="relative z-10 flex items-center justify-center gap-2">

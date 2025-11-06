@@ -1,15 +1,28 @@
-import { useState, useRef } from 'react';
-import { Upload, Sparkles } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Upload, Sparkles, Check } from 'lucide-react';
 
 interface UpscaleOptionsProps {
   onGenerate: (data: Record<string, unknown>) => void;
+  preloadedImage?: string | null;
+  onImageUsed?: () => void;
 }
 
-export default function UpscaleOptions({ onGenerate }: UpscaleOptionsProps) {
+export default function UpscaleOptions({ onGenerate, preloadedImage, onImageUsed }: UpscaleOptionsProps) {
   const [inputImage, setInputImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [upscaleLevel, setUpscaleLevel] = useState(2);
+  const [isFromChain, setIsFromChain] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (preloadedImage) {
+      setImagePreview(preloadedImage);
+      setIsFromChain(true);
+      if (onImageUsed) {
+        onImageUsed();
+      }
+    }
+  }, [preloadedImage, onImageUsed]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -29,19 +42,26 @@ export default function UpscaleOptions({ onGenerate }: UpscaleOptionsProps) {
     <div className="space-y-2.5">
       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
 
-      <button
-        onClick={() => fileInputRef.current?.click()}
-        className="w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-brand transition-colors flex items-center justify-center"
-      >
-        {imagePreview ? (
-          <img src={imagePreview} alt="Input" className="w-full h-full object-contain p-1.5 rounded-lg" />
-        ) : (
-          <div className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400">
-            <Upload size={18} />
-            <span className="text-xs font-medium">Upload Image</span>
+      <div className="relative">
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-brand transition-colors flex items-center justify-center"
+        >
+          {imagePreview ? (
+            <img src={imagePreview} alt="Input" className="w-full h-full object-contain p-1.5 rounded-lg" />
+          ) : (
+            <div className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400">
+              <Upload size={18} />
+              <span className="text-xs font-medium">Upload Image</span>
+            </div>
+          )}
+        </button>
+        {isFromChain && imagePreview && (
+          <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1.5 shadow-lg">
+            <Check size={12} />
           </div>
         )}
-      </button>
+      </div>
 
       <div>
         <label className="block text-[10px] font-medium text-gray-600 dark:text-gray-400 mb-1">Scale</label>
@@ -64,7 +84,7 @@ export default function UpscaleOptions({ onGenerate }: UpscaleOptionsProps) {
 
       <button
         onClick={handleGenerate}
-        disabled={!inputImage}
+        disabled={!inputImage && !imagePreview}
         className="w-full bg-brand hover:bg-brand/90 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
       >
         <Sparkles size={14} className="animate-pulse" />

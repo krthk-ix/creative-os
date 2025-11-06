@@ -1,10 +1,12 @@
-import { useState, useRef } from 'react';
-import { Upload, Sparkles, Image } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Upload, Sparkles, Image, Check } from 'lucide-react';
 
 type ModeType = 'automatic' | 'prompt' | 'upload';
 
 interface SocialPosterOptionsProps {
   onGenerate: (data: Record<string, unknown>) => void;
+  preloadedImage?: string | null;
+  onImageUsed?: () => void;
 }
 
 const posterPrompts = [
@@ -57,7 +59,7 @@ const modeDescriptions = {
   upload: 'Upload reference image for design inspiration',
 };
 
-export default function SocialPosterOptions({ onGenerate }: SocialPosterOptionsProps) {
+export default function SocialPosterOptions({ onGenerate, preloadedImage, onImageUsed }: SocialPosterOptionsProps) {
   const [mode, setMode] = useState<ModeType>('automatic');
   const [inputImage, setInputImage] = useState<File | null>(null);
   const [referenceImage, setReferenceImage] = useState<File | null>(null);
@@ -66,9 +68,20 @@ export default function SocialPosterOptions({ onGenerate }: SocialPosterOptionsP
   const [selectedPrompt, setSelectedPrompt] = useState<string>('');
   const [selectedPreset, setSelectedPreset] = useState<SizePreset | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('Instagram');
+  const [isFromChain, setIsFromChain] = useState(false);
 
   const inputFileRef = useRef<HTMLInputElement>(null);
   const referenceFileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (preloadedImage) {
+      setInputImagePreview(preloadedImage);
+      setIsFromChain(true);
+      if (onImageUsed) {
+        onImageUsed();
+      }
+    }
+  }, [preloadedImage, onImageUsed]);
 
   const categories = Array.from(new Set(posterSizes.map(s => s.category)));
   const filteredSizes = posterSizes.filter(s => s.category === selectedCategory);
@@ -133,10 +146,11 @@ export default function SocialPosterOptions({ onGenerate }: SocialPosterOptionsP
           onChange={handleInputImageChange}
           className="hidden"
         />
-        <button
-          onClick={() => inputFileRef.current?.click()}
-          className="w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl hover:border-brand dark:hover:border-brand transition-all flex flex-col items-center justify-center gap-2 text-gray-500 dark:text-gray-400 hover:text-brand dark:hover:text-brand group"
-        >
+        <div className="relative">
+          <button
+            onClick={() => inputFileRef.current?.click()}
+            className="w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl hover:border-brand dark:hover:border-brand transition-all flex flex-col items-center justify-center gap-2 text-gray-500 dark:text-gray-400 hover:text-brand dark:hover:text-brand group"
+          >
           {inputImagePreview ? (
             <div className="relative w-full h-full p-2">
               <img
@@ -152,7 +166,13 @@ export default function SocialPosterOptions({ onGenerate }: SocialPosterOptionsP
               <span className="text-xs">Click to browse</span>
             </>
           )}
-        </button>
+          </button>
+          {isFromChain && inputImagePreview && (
+            <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1.5 shadow-lg">
+              <Check size={14} />
+            </div>
+          )}
+        </div>
         {inputImage && (
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
             {inputImage.name}
@@ -346,7 +366,7 @@ export default function SocialPosterOptions({ onGenerate }: SocialPosterOptionsP
         <button
           onClick={handleGenerate}
           disabled={
-            !inputImage ||
+            (!inputImage && !inputImagePreview) ||
             !selectedPreset ||
             (mode === 'prompt' && !selectedPrompt) ||
             (mode === 'upload' && !referenceImage)

@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Download, ThumbsUp, ThumbsDown, Sparkles, User, Shirt, Palette, ArrowUpCircle, Image, Maximize2, Camera, Video, FileImage, RectangleHorizontal, RectangleVertical, ChevronDown, ChevronUp } from 'lucide-react';
+import { Download, ThumbsUp, ThumbsDown, Sparkles, User, Shirt, Palette, ArrowUpCircle, Image, Maximize2, Camera, Video, FileImage, RectangleHorizontal, RectangleVertical, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 import MinimalChatControls from './MinimalChatControls';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import WorkflowSuggestions from './WorkflowSuggestions';
+import { getTopSuggestions } from '../../lib/workflowChaining';
 import HumanModelOptions from './HumanModelOptions';
 import VirtualTryonOptions from './VirtualTryonOptions';
 import ColorChangeOptions from './ColorChangeOptions';
@@ -22,6 +24,7 @@ interface GenerationResult {
   settings: WorkflowSettings;
   timestamp: Date;
   generationData?: Record<string, unknown>;
+  workflowType: string;
 }
 
 interface WorkflowOption {
@@ -58,6 +61,7 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
   const [isExpanded, setIsExpanded] = useState(false);
   const [credits, setCredits] = useState(60);
   const totalCredits = 200;
+  const [pendingChainImage, setPendingChainImage] = useState<string | null>(null);
 
   const [settings, setSettings] = useState<WorkflowSettings>({
     method: 'automatic',
@@ -102,6 +106,7 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
           settings,
           timestamp: new Date(),
           generationData: data,
+          workflowType: selectedWorkflow,
         };
 
         setResults((prev) => [newResult, ...prev]);
@@ -193,7 +198,15 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
             )}
 
             {results.map((result) => (
-              <ResultCard key={result.id} result={result} />
+              <ResultCard
+                key={result.id}
+                result={result}
+                onChainWorkflow={(workflowId: string, imageUrl: string) => {
+                  setPendingChainImage(imageUrl);
+                  onSelectWorkflow(workflowId, workflows.find(w => w.id === workflowId)?.name || '');
+                  setIsExpanded(true);
+                }}
+              />
             ))}
           </div>
         )}
@@ -387,16 +400,28 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
                     <ColorChangeOptions onGenerate={handleGenerate} />
                   )}
                   {selectedWorkflow === 'upscale' && (
-                    <UpscaleOptions onGenerate={handleGenerate} />
+                    <UpscaleOptions
+                      onGenerate={handleGenerate}
+                      preloadedImage={pendingChainImage}
+                      onImageUsed={() => setPendingChainImage(null)}
+                    />
                   )}
                   {selectedWorkflow === 'graphic_transfer' && (
                     <GraphicTransferOptions onGenerate={handleGenerate} />
                   )}
                   {selectedWorkflow === 'resize' && (
-                    <ResizePhotoOptions onGenerate={handleGenerate} />
+                    <ResizePhotoOptions
+                      onGenerate={handleGenerate}
+                      preloadedImage={pendingChainImage}
+                      onImageUsed={() => setPendingChainImage(null)}
+                    />
                   )}
                   {selectedWorkflow === 'background' && (
-                    <BackgroundOptions onGenerate={handleGenerate} />
+                    <BackgroundOptions
+                      onGenerate={handleGenerate}
+                      preloadedImage={pendingChainImage}
+                      onImageUsed={() => setPendingChainImage(null)}
+                    />
                   )}
                   {selectedWorkflow === 'lifestyle' && (
                     <LifestyleOptions onGenerate={handleGenerate} />
@@ -405,7 +430,11 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
                     <VideoGenOptions onGenerate={handleGenerate} />
                   )}
                   {selectedWorkflow === 'poster' && (
-                    <SocialPosterOptions onGenerate={handleGenerate} />
+                    <SocialPosterOptions
+                      onGenerate={handleGenerate}
+                      preloadedImage={pendingChainImage}
+                      onImageUsed={() => setPendingChainImage(null)}
+                    />
                   )}
                   {!['model', 'tryon', 'color_change', 'upscale', 'graphic_transfer', 'resize', 'background', 'lifestyle', 'video', 'poster'].includes(selectedWorkflow) && (
                     <div className="text-center py-8">
@@ -424,7 +453,13 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
   );
 }
 
-function ResultCard({ result }: { result: GenerationResult }) {
+interface ResultCardProps {
+  result: GenerationResult;
+  onChainWorkflow: (workflowId: string, imageUrl: string) => void;
+}
+
+function ResultCard({ result, onChainWorkflow }: ResultCardProps) {
+  const suggestions = getTopSuggestions(result.workflowType, 3);
   return (
     <div className="flex justify-start">
       <div className="max-w-3xl w-full space-y-3">
@@ -443,9 +478,19 @@ function ResultCard({ result }: { result: GenerationResult }) {
 
         <div className="grid grid-cols-2 gap-3">
           {result.imageUrls.map((imageUrl, index) => (
-            <ImageCard key={`${result.id}-${index}`} imageUrl={imageUrl} />
+            <ImageCard
+              key={`${result.id}-${index}`}
+              imageUrl={imageUrl}
+              onChainWorkflow={onChainWorkflow}
+            />
           ))}
         </div>
+
+        <WorkflowSuggestions
+          suggestions={suggestions}
+          onSelectWorkflow={(workflowId) => onChainWorkflow(workflowId, result.imageUrls[0])}
+          imageUrl={result.imageUrls[0]}
+        />
 
         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-1">
           <span>{result.timestamp.toLocaleString()}</span>
@@ -457,7 +502,12 @@ function ResultCard({ result }: { result: GenerationResult }) {
   );
 }
 
-function ImageCard({ imageUrl }: { imageUrl: string }) {
+interface ImageCardProps {
+  imageUrl: string;
+  onChainWorkflow: (workflowId: string, imageUrl: string) => void;
+}
+
+function ImageCard({ imageUrl, onChainWorkflow }: ImageCardProps) {
   const [feedback, setFeedback] = useState<'like' | 'dislike' | null>(null);
   const [showActions, setShowActions] = useState(false);
 
