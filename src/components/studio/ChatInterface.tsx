@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, ThumbsUp, ThumbsDown, Sparkles, ChevronDown, ChevronUp, Share2, RectangleHorizontal, RectangleVertical } from 'lucide-react';
+import { Download, ThumbsUp, ThumbsDown, Sparkles, ChevronDown, ChevronUp, Share2, RectangleHorizontal, RectangleVertical, User, Shirt, Palette, ArrowUpCircle, Image, Maximize2, Camera, Video, FileImage } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import HumanModelOptions from './HumanModelOptions';
@@ -23,13 +23,34 @@ interface GenerationResult {
   generationData?: Record<string, unknown>;
 }
 
+interface WorkflowOption {
+  id: string;
+  name: string;
+  icon: typeof User;
+  description: string;
+}
+
+const workflows: WorkflowOption[] = [
+  { id: 'model', name: 'Human Model', icon: User, description: 'Generate AI models' },
+  { id: 'tryon', name: 'Virtual Try-On', icon: Shirt, description: 'Try clothes on models' },
+  { id: 'color_change', name: 'Color Change', icon: Palette, description: 'Change product colors' },
+  { id: 'upscale', name: 'Upscale', icon: ArrowUpCircle, description: 'Enhance image quality' },
+  { id: 'graphic_transfer', name: 'Graphic Transfer', icon: Image, description: 'Apply graphics' },
+  { id: 'resize', name: 'Resize Photo', icon: Maximize2, description: 'Resize images' },
+  { id: 'background', name: 'Background', icon: Camera, description: 'Change backgrounds' },
+  { id: 'lifestyle', name: 'Lifestyle', icon: Camera, description: 'Create lifestyle shots' },
+  { id: 'video', name: 'Video Gen', icon: Video, description: 'Generate videos' },
+  { id: 'poster', name: 'Social Poster', icon: FileImage, description: 'Create social posts' },
+];
+
 interface ChatInterfaceProps {
   selectedWorkflow: string;
   workflowName: string;
   sidebarCollapsed: boolean;
+  onSelectWorkflow: (id: string, name: string) => void;
 }
 
-export default function ChatInterface({ selectedWorkflow, workflowName, sidebarCollapsed }: ChatInterfaceProps) {
+export default function ChatInterface({ selectedWorkflow, workflowName, sidebarCollapsed, onSelectWorkflow }: ChatInterfaceProps) {
   const { user } = useAuth();
   const [results, setResults] = useState<GenerationResult[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -96,19 +117,58 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
       <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950" style={{ paddingBottom: isExpanded ? '680px' : '120px' }}>
         {results.length === 0 && !isGenerating ? (
           <div className="h-full flex items-center justify-center p-6">
-            <div className="text-center max-w-2xl">
-              <div className="w-20 h-20 bg-brand rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-brand/20">
-                <Sparkles className="text-white" size={40} />
+            {!selectedWorkflow ? (
+              <div className="text-center max-w-5xl w-full">
+                <div className="w-20 h-20 bg-brand rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-brand/20">
+                  <Sparkles className="text-white" size={40} />
+                </div>
+                <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-3">
+                  Create stunning visuals in seconds
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 text-lg mb-8">
+                  Choose a workflow to get started
+                </p>
+
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-4xl mx-auto">
+                  {workflows.map((workflow) => {
+                    const Icon = workflow.icon;
+                    return (
+                      <button
+                        key={workflow.id}
+                        onClick={() => onSelectWorkflow(workflow.id, workflow.name)}
+                        className="group relative bg-white dark:bg-gray-900 rounded-xl p-4 border-2 border-gray-200 dark:border-gray-800 hover:border-brand dark:hover:border-brand transition-all hover:shadow-lg hover:shadow-brand/10 hover:-translate-y-0.5"
+                      >
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 group-hover:bg-brand/10 dark:group-hover:bg-brand/20 flex items-center justify-center transition-colors">
+                            <Icon className="text-gray-600 dark:text-gray-400 group-hover:text-brand" size={24} />
+                          </div>
+                          <div className="text-center">
+                            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">
+                              {workflow.name}
+                            </h3>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {workflow.description}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-3">
-                Create stunning visuals in seconds
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-lg">
-                {selectedWorkflow
-                  ? 'Configure your settings below and hit generate'
-                  : 'Choose a workflow from the sidebar to begin'}
-              </p>
-            </div>
+            ) : (
+              <div className="text-center max-w-2xl">
+                <div className="w-20 h-20 bg-brand rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-brand/20">
+                  <Sparkles className="text-white" size={40} />
+                </div>
+                <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-3">
+                  Create stunning visuals in seconds
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 text-lg">
+                  Configure your settings below and hit generate
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="max-w-4xl mx-auto p-6 space-y-6">

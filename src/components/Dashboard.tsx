@@ -24,7 +24,7 @@ export default function Dashboard() {
   const renderView = () => {
     switch (currentView) {
       case 'studio':
-        return <Studio selectedWorkflow={selectedWorkflow} workflowName={workflowName} sidebarCollapsed={sidebarCollapsed} />;
+        return <Studio selectedWorkflow={selectedWorkflow} workflowName={workflowName} sidebarCollapsed={sidebarCollapsed} onSelectWorkflow={handleWorkflowSelect} />;
       case 'projects':
         return <Projects />;
       case 'profile':
@@ -36,7 +36,7 @@ export default function Dashboard() {
       case 'settings':
         return <Settings />;
       default:
-        return <Studio selectedWorkflow={selectedWorkflow} workflowName={workflowName} sidebarCollapsed={sidebarCollapsed} />;
+        return <Studio selectedWorkflow={selectedWorkflow} workflowName={workflowName} sidebarCollapsed={sidebarCollapsed} onSelectWorkflow={handleWorkflowSelect} />;
     }
   };
 
