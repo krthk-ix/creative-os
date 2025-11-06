@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Download, ThumbsUp, ThumbsDown, Sparkles, ChevronDown, ChevronUp, Share2, RectangleHorizontal, RectangleVertical, User, Shirt, Palette, ArrowUpCircle, Image, Maximize2, Camera, Video, FileImage } from 'lucide-react';
+import { Download, ThumbsUp, ThumbsDown, Sparkles, User, Shirt, Palette, ArrowUpCircle, Image, Maximize2, Camera, Video, FileImage } from 'lucide-react';
+import MinimalChatControls from './MinimalChatControls';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import HumanModelOptions from './HumanModelOptions';
@@ -114,7 +115,7 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
 
   return (
     <div className="h-full flex flex-col relative">
-      <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950" style={{ paddingBottom: isExpanded ? '680px' : '120px' }}>
+      <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950" style={{ paddingBottom: isExpanded ? '420px' : '80px' }}>
         {results.length === 0 && !isGenerating ? (
           <div className="h-full flex items-center justify-center p-6">
             {!selectedWorkflow ? (
