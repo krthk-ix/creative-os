@@ -33,7 +33,7 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
   const { user } = useAuth();
   const [results, setResults] = useState<GenerationResult[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(selectedWorkflow ? true : false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [credits, setCredits] = useState(60);
   const totalCredits = 200;
 
@@ -138,23 +138,26 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
         )}
       </div>
 
-      {selectedWorkflow && (
-        <div className={`fixed bottom-0 right-0 z-40 bg-gradient-to-t from-gray-50 dark:from-gray-950 via-gray-50/95 dark:via-gray-950/95 to-transparent pt-8 pb-6 transition-all duration-300 ${
-          sidebarCollapsed ? 'left-16' : 'left-52'
-        }`}>
+      <div className={`fixed bottom-0 right-0 z-40 bg-gradient-to-t from-gray-50 dark:from-gray-950 via-gray-50/95 dark:via-gray-950/95 to-transparent pt-8 pb-6 transition-all duration-300 ${
+        sidebarCollapsed ? 'left-16' : 'left-52'
+      }`}>
           <div className="max-w-2xl mx-auto px-6 space-y-3">
-            <div className="bg-gray-200 dark:bg-gray-800 rounded-xl px-4 py-2 text-center text-sm">
-              <span className="text-gray-700 dark:text-gray-300">
-                {credits}/{totalCredits} credits remaining.
-              </span>
-              <button className="text-red-600 dark:text-red-400 font-medium hover:underline ml-1">
-                Switch to pro plan for unlimited credits
-              </button>
-            </div>
+            {selectedWorkflow && (
+              <div className="bg-gray-200 dark:bg-gray-800 rounded-xl px-4 py-2 text-center text-sm">
+                <span className="text-gray-700 dark:text-gray-300">
+                  {credits}/{totalCredits} credits remaining.
+                </span>
+                <button className="text-red-600 dark:text-red-400 font-medium hover:underline ml-1">
+                  Switch to pro plan for unlimited credits
+                </button>
+              </div>
+            )}
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300">
             <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+              onClick={() => selectedWorkflow && setIsExpanded(!isExpanded)}
+              className={`w-full px-6 py-4 flex items-center justify-between transition-colors ${
+                selectedWorkflow ? 'hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer' : 'cursor-default'
+              }`}
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-brand rounded-xl flex items-center justify-center">
@@ -162,15 +165,15 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
                 </div>
                 <div className="text-left">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {workflowName}
+                    {selectedWorkflow ? workflowName : 'Select a workflow to begin'}
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {isExpanded ? 'Customize settings' : 'Click to customize'}
+                    {selectedWorkflow ? (isExpanded ? 'Customize settings' : 'Click to customize') : 'Choose from the sidebar'}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                {selectedWorkflow === 'video' ? (
+                {selectedWorkflow && selectedWorkflow === 'video' ? (
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Format:</span>
@@ -249,7 +252,7 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
                       </button>
                     </div>
                   </div>
-                ) : (
+                ) : selectedWorkflow ? (
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Format:</span>
@@ -297,64 +300,65 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
                       </div>
                     </div>
                   </div>
-                )}
-                {isExpanded ? (
+                ) : null}
+                {selectedWorkflow && (isExpanded ? (
                   <ChevronDown size={20} className="text-gray-400" />
                 ) : (
                   <ChevronUp size={20} className="text-gray-400" />
-                )}
+                ))}
               </div>
             </button>
 
-            <div
-              className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                isExpanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
-              }`}
-            >
-              <div className="px-6 pb-6 border-t border-gray-200 dark:border-gray-800 pt-4">
-                {selectedWorkflow === 'model' && (
-                  <HumanModelOptions onGenerate={handleGenerate} />
-                )}
-                {selectedWorkflow === 'tryon' && (
-                  <VirtualTryonOptions onGenerate={handleGenerate} />
-                )}
-                {selectedWorkflow === 'color_change' && (
-                  <ColorChangeOptions onGenerate={handleGenerate} />
-                )}
-                {selectedWorkflow === 'upscale' && (
-                  <UpscaleOptions onGenerate={handleGenerate} />
-                )}
-                {selectedWorkflow === 'graphic_transfer' && (
-                  <GraphicTransferOptions onGenerate={handleGenerate} />
-                )}
-                {selectedWorkflow === 'resize' && (
-                  <ResizePhotoOptions onGenerate={handleGenerate} />
-                )}
-                {selectedWorkflow === 'background' && (
-                  <BackgroundOptions onGenerate={handleGenerate} />
-                )}
-                {selectedWorkflow === 'lifestyle' && (
-                  <LifestyleOptions onGenerate={handleGenerate} />
-                )}
-                {selectedWorkflow === 'video' && (
-                  <VideoGenOptions onGenerate={handleGenerate} />
-                )}
-                {selectedWorkflow === 'poster' && (
-                  <SocialPosterOptions onGenerate={handleGenerate} />
-                )}
-                {!['model', 'tryon', 'color_change', 'upscale', 'graphic_transfer', 'resize', 'background', 'lifestyle', 'video', 'poster'].includes(selectedWorkflow) && (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 dark:text-gray-400">
-                      Options for {workflowName} coming soon...
-                    </p>
-                  </div>
-                )}
+            {selectedWorkflow && (
+              <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  isExpanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+                }`}
+              >
+                <div className="px-6 pb-6 border-t border-gray-200 dark:border-gray-800 pt-4">
+                  {selectedWorkflow === 'model' && (
+                    <HumanModelOptions onGenerate={handleGenerate} />
+                  )}
+                  {selectedWorkflow === 'tryon' && (
+                    <VirtualTryonOptions onGenerate={handleGenerate} />
+                  )}
+                  {selectedWorkflow === 'color_change' && (
+                    <ColorChangeOptions onGenerate={handleGenerate} />
+                  )}
+                  {selectedWorkflow === 'upscale' && (
+                    <UpscaleOptions onGenerate={handleGenerate} />
+                  )}
+                  {selectedWorkflow === 'graphic_transfer' && (
+                    <GraphicTransferOptions onGenerate={handleGenerate} />
+                  )}
+                  {selectedWorkflow === 'resize' && (
+                    <ResizePhotoOptions onGenerate={handleGenerate} />
+                  )}
+                  {selectedWorkflow === 'background' && (
+                    <BackgroundOptions onGenerate={handleGenerate} />
+                  )}
+                  {selectedWorkflow === 'lifestyle' && (
+                    <LifestyleOptions onGenerate={handleGenerate} />
+                  )}
+                  {selectedWorkflow === 'video' && (
+                    <VideoGenOptions onGenerate={handleGenerate} />
+                  )}
+                  {selectedWorkflow === 'poster' && (
+                    <SocialPosterOptions onGenerate={handleGenerate} />
+                  )}
+                  {!['model', 'tryon', 'color_change', 'upscale', 'graphic_transfer', 'resize', 'background', 'lifestyle', 'video', 'poster'].includes(selectedWorkflow) && (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500 dark:text-gray-400">
+                        Options for {workflowName} coming soon...
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
