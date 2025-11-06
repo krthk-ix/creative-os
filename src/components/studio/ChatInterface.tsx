@@ -121,29 +121,29 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
 
   return (
     <div className="h-full flex flex-col relative">
-      <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950" style={{ paddingBottom: isExpanded ? '420px' : '80px' }}>
+      <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 pb-[140px] sm:pb-[100px]" style={{ paddingBottom: isExpanded ? '420px' : undefined }}>
         {results.length === 0 && !isGenerating ? (
           <div className="h-full flex items-center justify-center p-6">
             {!selectedWorkflow ? (
-              <div className="text-center max-w-5xl w-full">
-                <div className="w-20 h-20 bg-brand rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-brand/20">
-                  <Sparkles className="text-white" size={40} />
+              <div className="text-center max-w-5xl w-full px-4">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-brand rounded-2xl mx-auto mb-4 sm:mb-6 flex items-center justify-center shadow-lg shadow-brand/20">
+                  <Sparkles className="text-white" size={32} />
                 </div>
-                <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-3">
-                  Create stunning visuals in seconds
+                <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-2 sm:mb-3">
+                  Create stunning visuals
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 text-lg mb-8">
+                <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base mb-6 sm:mb-8">
                   Choose a workflow to get started
                 </p>
 
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-4xl mx-auto">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3 max-w-4xl mx-auto">
                   {workflows.map((workflow) => {
                     const Icon = workflow.icon;
                     return (
                       <button
                         key={workflow.id}
                         onClick={() => onSelectWorkflow(workflow.id, workflow.name)}
-                        className="group relative bg-white dark:bg-gray-900 rounded-xl p-4 border-2 border-gray-200 dark:border-gray-800 hover:border-brand dark:hover:border-brand transition-all hover:shadow-lg hover:shadow-brand/10 hover:-translate-y-0.5"
+                        className="group relative bg-white dark:bg-gray-900 rounded-xl p-3 sm:p-4 border-2 border-gray-200 dark:border-gray-800 hover:border-brand dark:hover:border-brand transition-all hover:shadow-lg hover:shadow-brand/10 hover:-translate-y-0.5"
                       >
                         <div className="flex flex-col items-center gap-2">
                           <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 group-hover:bg-brand/10 dark:group-hover:bg-brand/20 flex items-center justify-center transition-colors">
@@ -164,21 +164,21 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
                 </div>
               </div>
             ) : (
-              <div className="text-center max-w-2xl">
-                <div className="w-20 h-20 bg-brand rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-brand/20">
-                  <Sparkles className="text-white" size={40} />
+              <div className="text-center max-w-2xl px-4">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-brand rounded-2xl mx-auto mb-4 sm:mb-6 flex items-center justify-center shadow-lg shadow-brand/20">
+                  <Sparkles className="text-white" size={32} />
                 </div>
-                <h2 className="text-3xl font-semibold text-gray-900 dark:text-white mb-3">
-                  Create stunning visuals in seconds
+                <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-2 sm:mb-3">
+                  Create stunning visuals
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 text-lg">
-                  Configure your settings below and hit generate
+                <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
+                  Tap workflow selector above to begin
                 </p>
               </div>
             )}
           </div>
         ) : (
-          <div className="max-w-4xl mx-auto p-6 space-y-6">
+          <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
             {isGenerating && (
               <div className="flex justify-start">
                 <div className="max-w-3xl w-full">
@@ -186,7 +186,7 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand"></div>
                     <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">Generating...</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {Array.from({ length: settings.outputCount }).map((_, i) => (
                       <div
                         key={i}
@@ -213,41 +213,42 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
         )}
       </div>
 
-      <div className={`fixed bottom-0 right-0 z-40 bg-gradient-to-t from-gray-50 dark:from-gray-950 via-gray-50/95 dark:via-gray-950/95 to-transparent pt-8 pb-6 transition-all duration-300 ${
-        sidebarCollapsed ? 'left-16' : 'left-52'
-      }`}>
-          <div className="max-w-2xl mx-auto px-6 space-y-3">
+      <div className="fixed bottom-0 left-0 right-0 lg:left-auto z-40 bg-gradient-to-t from-gray-50 dark:from-gray-950 via-gray-50/95 dark:via-gray-950/95 to-transparent pt-6 pb-20 lg:pb-6 transition-all duration-300 lg:right-0" style={{ left: window.innerWidth >= 1024 ? (sidebarCollapsed ? '64px' : '208px') : '0' }}>
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 space-y-3">
             {selectedWorkflow && (
-              <div className="bg-gray-200 dark:bg-gray-800 rounded-xl px-4 py-2 text-center text-sm">
-                <span className="text-gray-700 dark:text-gray-300">
-                  {credits}/{totalCredits} credits remaining.
-                </span>
-                <button className="text-red-600 dark:text-red-400 font-medium hover:underline ml-1">
-                  Switch to pro plan for unlimited credits
-                </button>
+              <div className="bg-gray-200 dark:bg-gray-800 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-1 text-center">
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {credits}/{totalCredits} credits
+                  </span>
+                  <span className="hidden sm:inline text-gray-500">•</span>
+                  <button className="text-red-600 dark:text-red-400 font-medium hover:underline">
+                    Upgrade to Pro
+                  </button>
+                </div>
               </div>
             )}
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden transition-all duration-300">
             <button
               onClick={() => selectedWorkflow && setIsExpanded(!isExpanded)}
-              className={`w-full px-6 py-4 flex items-center justify-between transition-colors ${
+              className={`w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between transition-colors ${
                 selectedWorkflow ? 'hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer' : 'cursor-default'
               }`}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-brand rounded-xl flex items-center justify-center">
-                  <Sparkles className="text-white" size={20} />
+              <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-brand rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="text-white" size={18} />
                 </div>
-                <div className="text-left">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {selectedWorkflow ? workflowName : 'Select a workflow to begin'}
+                <div className="text-left min-w-0 flex-1">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                    {selectedWorkflow ? workflowName : 'Select workflow'}
                   </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {selectedWorkflow ? (isExpanded ? 'Customize settings' : 'Click to customize') : 'Choose from the sidebar'}
+                  <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block truncate">
+                    {selectedWorkflow ? (isExpanded ? 'Customize settings' : 'Tap to customize') : 'Choose from menu'}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-3 flex-shrink-0">
                 {selectedWorkflow && selectedWorkflow === 'video' ? (
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
                     <div className="flex items-center gap-1.5">

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Menu } from 'lucide-react';
 import UnifiedSidebar from './UnifiedSidebar';
+import MobileBottomNav from './MobileBottomNav';
+import MobileWorkflowSelector from './MobileWorkflowSelector';
 import Studio from './Studio';
 import Projects from './Projects';
 import Profile from './Profile';
@@ -58,19 +60,42 @@ export default function Dashboard() {
         isMobileMenuOpen={isMobileMenuOpen}
         onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       />
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden flex flex-col">
         {/* Mobile Header */}
-        <div className="lg:hidden sticky top-0 z-30 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
-          <button
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg transition-colors text-gray-700 dark:text-gray-300"
-          >
-            <Menu size={20} />
-          </button>
-          <img src="/shootx logo.png" alt="ShootX" className="h-6" />
-          <div className="w-10" />
+        <div className="lg:hidden sticky top-0 z-30 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800 px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg transition-colors text-gray-700 dark:text-gray-300 flex-shrink-0"
+            >
+              <Menu size={20} />
+            </button>
+
+            {currentView === 'studio' && (
+              <MobileWorkflowSelector
+                selectedWorkflow={selectedWorkflow}
+                onSelectWorkflow={handleWorkflowSelect}
+              />
+            )}
+
+            {currentView !== 'studio' && (
+              <img src="/shootx logo.png" alt="ShootX" className="h-6" />
+            )}
+
+            <div className="w-10 flex-shrink-0" />
+          </div>
         </div>
-        {renderView()}
+
+        {/* Main Content with bottom padding for mobile nav */}
+        <div className="flex-1 overflow-hidden pb-0 lg:pb-0">
+          {renderView()}
+        </div>
+
+        {/* Mobile Bottom Navigation */}
+        <MobileBottomNav
+          activeView={currentView}
+          onViewChange={(view) => setCurrentView(view as View)}
+        />
       </main>
     </div>
   );
