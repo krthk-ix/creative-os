@@ -1,3 +1,80 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Dark mode Gemini-style colors */
+  .dark {
+    --color-bg: #1E1E1E;
+    --color-surface: #282828;
+    --color-sidebar: #1A1A1A;
+    --color-border: #3C3C3C;
+    --color-hover: #353535;
+    --color-text: #E8E8E8;
+    --color-text-secondary: #B4B4B4;
+  }
+
+  /* Override default dark mode colors */
+  .dark body {
+    background-color: #1E1E1E;
+    color: #E8E8E8;
+  }
+
+  .dark .bg-black {
+    background-color: #1E1E1E !important;
+  }
+
+  .dark .bg-gray-950 {
+    background-color: #1A1A1A !important;
+  }
+
+  .dark .bg-gray-900 {
+    background-color: #282828 !important;
+  }
+
+  .dark .bg-gray-800 {
+    background-color: #353535 !important;
+  }
+
+  .dark .border-gray-800 {
+    border-color: #3C3C3C !important;
+  }
+
+  .dark .border-gray-700 {
+    border-color: #4A4A4A !important;
+  }
+
+  .dark .text-white {
+    color: #E8E8E8 !important;
+  }
+
+  .dark .text-gray-300 {
+    color: #B4B4B4 !important;
+  }
+
+  .dark .text-gray-400 {
+    color: #9E9E9E !important;
+  }
+
+  .dark .text-gray-500 {
+    color: #8A8A8A !important;
+  }
+
+  .dark .hover\:bg-gray-800:hover {
+    background-color: #353535 !important;
+  }
+
+  .dark .hover\:bg-gray-700:hover {
+    background-color: #404040 !important;
+  }
+
+  /* Selected/Active states */
+  .dark .bg-gray-900\/30 {
+    background-color: rgba(40, 40, 40, 0.5) !important;
+  }
+
+  /* Sidebar specific */
+  .dark [class*="sidebar"] {
+    background-color: #1A1A1A;
+  }
+}
