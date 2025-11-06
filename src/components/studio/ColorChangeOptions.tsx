@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Upload, Sparkles, Palette } from 'lucide-react';
+import { Upload, Sparkles } from 'lucide-react';
 import ManualMaskingEditor from './ManualMaskingEditor';
 
 type MaskingMethod = 'automatic' | 'manual';
@@ -13,26 +13,9 @@ export default function ColorChangeOptions({ onGenerate }: ColorChangeOptionsPro
   const [targetImage, setTargetImage] = useState<File | null>(null);
   const [targetImagePreview, setTargetImagePreview] = useState<string | null>(null);
   const [inputColor, setInputColor] = useState('#FF0000');
-  const [hexInput, setHexInput] = useState('#FF0000');
   const [showMaskingEditor, setShowMaskingEditor] = useState(false);
   const [maskData, setMaskData] = useState<string | null>(null);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const color = e.target.value;
-    setInputColor(color);
-    setHexInput(color.toUpperCase());
-  };
-
-  const handleHexInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setHexInput(value);
-
-    if (/^#[0-9A-F]{6}$/i.test(value)) {
-      setInputColor(value);
-    }
-  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -40,39 +23,23 @@ export default function ColorChangeOptions({ onGenerate }: ColorChangeOptionsPro
       setTargetImage(file);
       setMaskData(null);
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setTargetImagePreview(e.target?.result as string);
-      };
+      reader.onload = (e) => setTargetImagePreview(e.target?.result as string);
       reader.readAsDataURL(file);
     }
   };
 
   const handleGenerate = () => {
-    if (maskingMethod === 'manual' && !maskData && targetImagePreview) {
+    if (maskingMethod === 'manual' && !maskData) {
       setShowMaskingEditor(true);
       return;
     }
-
-    const data: Record<string, unknown> = {
-      inputColor,
-      targetImage,
-      maskingMethod,
-      maskData,
-    };
-
-    onGenerate(data);
+    onGenerate({ targetImage, inputColor, maskingMethod, maskData });
   };
 
   const handleMaskingComplete = (data: string) => {
     setMaskData(data);
     setShowMaskingEditor(false);
-
-    onGenerate({
-      inputColor,
-      targetImage,
-      maskingMethod: 'manual',
-      maskData: data,
-    });
+    onGenerate({ targetImage, inputColor, maskingMethod, maskData: data });
   };
 
   return (
@@ -86,141 +53,77 @@ export default function ColorChangeOptions({ onGenerate }: ColorChangeOptionsPro
         />
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-2.5">
+        <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-brand transition-colors flex items-center justify-center"
+        >
+          {targetImagePreview ? (
+            <img src={targetImagePreview} alt="Target" className="w-full h-full object-contain p-1.5 rounded-lg" />
+          ) : (
+            <div className="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400">
+              <Upload size={18} />
+              <span className="text-xs font-medium">Upload Image</span>
+            </div>
+          )}
+        </button>
+
         <div>
-          <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wide">
-            Input Color
-          </label>
-          <div className="flex gap-3">
-            <div className="relative">
-              <input
-                type="color"
-                value={inputColor}
-                onChange={handleColorChange}
-                className="w-20 h-20 rounded-lg cursor-pointer border-2 border-gray-300 dark:border-gray-700"
-              />
-              <Palette
-                size={16}
-                className="absolute bottom-1 right-1 text-gray-600 dark:text-gray-400 pointer-events-none"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-                HEX Code
-              </label>
-              <input
-                type="text"
-                value={hexInput}
-                onChange={handleHexInputChange}
-                placeholder="#FF0000"
-                maxLength={7}
-                className="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-800 border-0 rounded-lg text-sm font-mono text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand uppercase"
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Enter 6-digit hex color code
-              </p>
-            </div>
+          <label className="block text-[10px] font-medium text-gray-600 dark:text-gray-400 mb-1">New Color</label>
+          <div className="flex gap-2">
+            <input
+              type="color"
+              value={inputColor}
+              onChange={(e) => setInputColor(e.target.value)}
+              className="w-12 h-10 rounded cursor-pointer"
+            />
+            <input
+              type="text"
+              value={inputColor}
+              onChange={(e) => /^#[0-9A-F]{0,6}$/i.test(e.target.value) && setInputColor(e.target.value)}
+              className="flex-1 px-2 py-1.5 bg-gray-100 dark:bg-gray-800 rounded text-xs text-gray-900 dark:text-gray-100"
+              placeholder="#FF0000"
+            />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
-            Target Image
-          </label>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="hidden"
-          />
+          <label className="block text-[10px] font-medium text-gray-600 dark:text-gray-400 mb-1">Masking</label>
+          <div className="flex gap-1.5">
+            {(['automatic', 'manual'] as const).map((method) => (
+              <button
+                key={method}
+                onClick={() => { setMaskingMethod(method); setMaskData(null); }}
+                className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium capitalize transition-all ${
+                  maskingMethod === method
+                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+              >
+                {method}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {maskingMethod === 'manual' && targetImage && (
           <button
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl hover:border-brand dark:hover:border-brand transition-all flex flex-col items-center justify-center gap-2 text-gray-500 dark:text-gray-400 hover:text-brand dark:hover:text-brand group"
+            onClick={() => setShowMaskingEditor(true)}
+            className="w-full px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-medium rounded-lg transition-colors text-xs"
           >
-            {targetImagePreview ? (
-              <div className="relative w-full h-full p-2">
-                <img
-                  src={targetImagePreview}
-                  alt="Target"
-                  className="w-full h-full object-contain rounded-lg"
-                />
-              </div>
-            ) : (
-              <>
-                <Upload size={24} className="group-hover:scale-110 transition-transform" />
-                <span className="text-sm font-medium">Upload target image</span>
-                <span className="text-xs">Click to browse</span>
-              </>
-            )}
+            {maskData ? 'Edit Mask' : 'Define Mask'}
           </button>
-          {targetImage && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              {targetImage.name}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wide">
-            Masking Method
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => setMaskingMethod('automatic')}
-              className={`p-3 rounded-xl text-left transition-all border ${
-                maskingMethod === 'automatic'
-                  ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
-                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-              }`}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <Sparkles size={16} />
-                <span className="text-sm font-semibold">Automatic</span>
-              </div>
-              <p className={`text-xs ${maskingMethod === 'automatic' ? 'text-white/80 dark:text-gray-900/80' : 'text-gray-500 dark:text-gray-400'}`}>
-                AI-powered detection
-              </p>
-            </button>
-
-            <button
-              onClick={() => {
-                setMaskingMethod('manual');
-                setMaskData(null);
-              }}
-              className={`p-3 rounded-xl text-left transition-all border ${
-                maskingMethod === 'manual'
-                  ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
-                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-              }`}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <Palette size={16} />
-                <span className="text-sm font-semibold">Manual</span>
-              </div>
-              <p className={`text-xs ${maskingMethod === 'manual' ? 'text-white/80 dark:text-gray-900/80' : 'text-gray-500 dark:text-gray-400'}`}>
-                Draw custom area
-              </p>
-            </button>
-          </div>
-          {maskData && (
-            <p className="text-xs text-green-600 dark:text-green-400 mt-2 flex items-center gap-1">
-              <span className="w-2 h-2 bg-green-600 dark:bg-green-400 rounded-full"></span>
-              Mask area defined
-            </p>
-          )}
-        </div>
+        )}
 
         <button
           onClick={handleGenerate}
-          disabled={!targetImage}
-          className="relative w-full bg-brand hover:bg-brand/90 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg transition-colors overflow-hidden group"
+          disabled={!targetImage || (maskingMethod === 'manual' && !maskData)}
+          className="w-full bg-brand hover:bg-brand/90 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
         >
-          <span className="relative z-10 flex items-center justify-center gap-2">
-            <Sparkles size={16} className="animate-pulse" />
-            Change Color
-          </span>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+          <Sparkles size={14} className="animate-pulse" />
+          <span className="text-sm">Generate</span>
         </button>
       </div>
     </>
