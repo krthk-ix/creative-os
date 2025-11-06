@@ -50,11 +50,10 @@ const workflows: WorkflowOption[] = [
 interface ChatInterfaceProps {
   selectedWorkflow: string;
   workflowName: string;
-  sidebarCollapsed: boolean;
   onSelectWorkflow: (id: string, name: string) => void;
 }
 
-export default function ChatInterface({ selectedWorkflow, workflowName, sidebarCollapsed, onSelectWorkflow }: ChatInterfaceProps) {
+export default function ChatInterface({ selectedWorkflow, workflowName, onSelectWorkflow }: ChatInterfaceProps) {
   const { user } = useAuth();
   const [results, setResults] = useState<GenerationResult[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -213,7 +212,7 @@ export default function ChatInterface({ selectedWorkflow, workflowName, sidebarC
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 lg:left-auto z-40 bg-gradient-to-t from-gray-50 dark:from-gray-950 via-gray-50/95 dark:via-gray-950/95 to-transparent pt-6 pb-20 lg:pb-6 transition-all duration-300 lg:right-0" style={{ left: window.innerWidth >= 1024 ? (sidebarCollapsed ? '64px' : '208px') : '0' }}>
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-gray-50 dark:from-gray-950 via-gray-50/95 dark:via-gray-950/95 to-transparent pt-6 pb-20 lg:pb-6 transition-all duration-300">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 space-y-3">
             {selectedWorkflow && (
               <div className="bg-gray-200 dark:bg-gray-800 rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm">
