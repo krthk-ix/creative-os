@@ -460,37 +460,96 @@ interface ResultCardProps {
 }
 
 function ResultCard({ result, onChainWorkflow }: ResultCardProps) {
+  const workflowNames: Record<string, string> = {
+    model: 'Human Model',
+    tryon: 'Virtual Try-On',
+    color_change: 'Color Change',
+    upscale: 'Upscale',
+    graphic_transfer: 'Graphic Transfer',
+    resize: 'Resize Photo',
+    background: 'Background',
+    lifestyle: 'Lifestyle',
+    video: 'Video Gen',
+    poster: 'Social Poster',
+  };
+
+  const formatTimestamp = (date: Date) => {
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days}d ago`;
+    if (hours > 0) return `${hours}h ago`;
+    if (minutes > 0) return `${minutes}m ago`;
+    return 'Just now';
+  };
+
   return (
     <div className="flex justify-start">
-      <div className="max-w-3xl w-full space-y-3">
-        {result.generationData && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl px-4 py-3 shadow-sm border border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              <span className="font-medium">Mode:</span> {String(result.generationData.mode || 'automatic')}
-              {result.generationData.gender && (
-                <span className="ml-3">
-                  <span className="font-medium">Gender:</span> {String(result.generationData.gender)}
+      <div className="max-w-4xl w-full">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {workflowNames[result.workflowType] || result.workflowType}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {formatTimestamp(result.timestamp)} • {result.imageUrls.length} {result.imageUrls.length === 1 ? 'variant' : 'variants'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 bg-gray-200 dark:bg-gray-700 rounded-md text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {result.settings.outputFormat?.toUpperCase() || 'WEBP'}
                 </span>
-              )}
-            </p>
+              </div>
+            </div>
+
+            {result.generationData && Object.keys(result.generationData).length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex flex-wrap gap-2">
+                  {result.generationData.mode && (
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">Mode:</span>
+                      <span className="text-xs font-medium text-gray-900 dark:text-white">{String(result.generationData.mode)}</span>
+                    </div>
+                  )}
+                  {result.generationData.gender && (
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">Gender:</span>
+                      <span className="text-xs font-medium text-gray-900 dark:text-white">{String(result.generationData.gender)}</span>
+                    </div>
+                  )}
+                  {result.generationData.upscaleLevel && (
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">Scale:</span>
+                      <span className="text-xs font-medium text-gray-900 dark:text-white">{String(result.generationData.upscaleLevel)}x</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
-        )}
 
-        <div className="grid grid-cols-2 gap-3">
-          {result.imageUrls.map((imageUrl, index) => (
-            <ImageCard
-              key={`${result.id}-${index}`}
-              imageUrl={imageUrl}
-              onChainWorkflow={onChainWorkflow}
-              workflowType={result.workflowType}
-            />
-          ))}
-        </div>
-
-        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-1">
-          <span>{result.timestamp.toLocaleString()}</span>
-          <span className="text-gray-400 dark:text-gray-500">•</span>
-          <span>{result.imageUrls.length} {result.imageUrls.length === 1 ? 'image' : 'images'}</span>
+          <div className="p-4">
+            <div className="grid grid-cols-2 gap-4">
+              {result.imageUrls.map((imageUrl, index) => (
+                <ImageCard
+                  key={`${result.id}-${index}`}
+                  imageUrl={imageUrl}
+                  onChainWorkflow={onChainWorkflow}
+                  workflowType={result.workflowType}
+                  index={index + 1}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -501,9 +560,10 @@ interface ImageCardProps {
   imageUrl: string;
   onChainWorkflow: (workflowId: string, imageUrl: string) => void;
   workflowType: string;
+  index: number;
 }
 
-function ImageCard({ imageUrl, onChainWorkflow, workflowType }: ImageCardProps) {
+function ImageCard({ imageUrl, onChainWorkflow, workflowType, index }: ImageCardProps) {
   const [feedback, setFeedback] = useState<'like' | 'dislike' | null>(null);
   const [showActions, setShowActions] = useState(false);
   const suggestions = getTopSuggestions(workflowType, 2);
@@ -532,78 +592,90 @@ function ImageCard({ imageUrl, onChainWorkflow, workflowType }: ImageCardProps) 
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div
         className="group relative"
         onMouseEnter={() => setShowActions(true)}
         onMouseLeave={() => setShowActions(false)}
       >
-        <div className="relative rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow-md hover:shadow-xl transition-all">
+        <div className="relative rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow-sm hover:shadow-lg transition-all border border-gray-100 dark:border-gray-700">
+          <div className="absolute top-3 left-3 z-10">
+            <span className="px-2 py-1 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold rounded-md">
+              #{index}
+            </span>
+          </div>
+
           <img
             src={imageUrl}
-            alt="Generated result"
+            alt={`Generated result ${index}`}
             className="w-full h-auto"
           />
+
           <div
-            className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity ${
+            className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-opacity ${
               showActions ? 'opacity-100' : 'opacity-0'
             }`}
           />
+
           <div
-            className={`absolute bottom-3 left-3 right-3 flex items-center justify-between transition-all ${
+            className={`absolute bottom-0 left-0 right-0 p-3 transition-all ${
               showActions ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
             }`}
           >
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFeedback(feedback === 'like' ? null : 'like')}
-                className={`p-2 rounded-lg backdrop-blur-md transition-all ${
-                  feedback === 'like'
-                    ? 'bg-green-500 text-white scale-110'
-                    : 'bg-white/90 dark:bg-gray-900/90 text-gray-700 dark:text-gray-300 hover:scale-110'
-                }`}
-                title="Like"
-              >
-                <ThumbsUp size={16} />
-              </button>
-              <button
-                onClick={() => setFeedback(feedback === 'dislike' ? null : 'dislike')}
-                className={`p-2 rounded-lg backdrop-blur-md transition-all ${
-                  feedback === 'dislike'
-                    ? 'bg-red-500 text-white scale-110'
-                    : 'bg-white/90 dark:bg-gray-900/90 text-gray-700 dark:text-gray-300 hover:scale-110'
-                }`}
-                title="Dislike"
-              >
-                <ThumbsDown size={16} />
-              </button>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex gap-1.5">
+                <button
+                  onClick={() => setFeedback(feedback === 'like' ? null : 'like')}
+                  className={`p-2 rounded-lg backdrop-blur-md transition-all ${
+                    feedback === 'like'
+                      ? 'bg-green-500 text-white'
+                      : 'bg-white/90 dark:bg-gray-900/90 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-900'
+                  }`}
+                  title="Like"
+                >
+                  <ThumbsUp size={14} />
+                </button>
+                <button
+                  onClick={() => setFeedback(feedback === 'dislike' ? null : 'dislike')}
+                  className={`p-2 rounded-lg backdrop-blur-md transition-all ${
+                    feedback === 'dislike'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-white/90 dark:bg-gray-900/90 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-900'
+                  }`}
+                  title="Dislike"
+                >
+                  <ThumbsDown size={14} />
+                </button>
+              </div>
+              <div className="flex gap-1.5">
+                <button
+                  onClick={handleShare}
+                  className="p-2 bg-white/90 dark:bg-gray-900/90 hover:bg-white dark:hover:bg-gray-900 rounded-lg backdrop-blur-md transition-all text-gray-700 dark:text-gray-300"
+                  title="Share"
+                >
+                  <Share2 size={14} />
+                </button>
+                <button
+                  onClick={handleDownload}
+                  className="p-2 bg-white/90 dark:bg-gray-900/90 hover:bg-white dark:hover:bg-gray-900 rounded-lg backdrop-blur-md transition-all text-gray-700 dark:text-gray-300"
+                  title="Download"
+                >
+                  <Download size={14} />
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={handleShare}
-                className="p-2 bg-white/90 dark:bg-gray-900/90 hover:scale-110 rounded-lg backdrop-blur-md transition-all text-gray-700 dark:text-gray-300"
-                title="Share"
-              >
-                <Share2 size={16} />
-              </button>
-              <button
-                onClick={handleDownload}
-                className="p-2 bg-white/90 dark:bg-gray-900/90 hover:scale-110 rounded-lg backdrop-blur-md transition-all text-gray-700 dark:text-gray-300"
-                title="Download"
-              >
-                <Download size={16} />
-              </button>
-            </div>
+
+            {suggestions.length > 0 && (
+              <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-lg p-2.5">
+                <WorkflowSuggestions
+                  suggestions={suggestions}
+                  onSelectWorkflow={(workflowId) => onChainWorkflow(workflowId, imageUrl)}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {suggestions.length > 0 && (
-        <WorkflowSuggestions
-          suggestions={suggestions}
-          onSelectWorkflow={(workflowId) => onChainWorkflow(workflowId, imageUrl)}
-        />
-      )}
     </div>
   );
 }
