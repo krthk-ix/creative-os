@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, ThumbsUp, ThumbsDown, Sparkles, User, Shirt, Palette, ArrowUpCircle, Image, Maximize2, Camera, Video, FileImage, RectangleHorizontal, RectangleVertical, ChevronDown, ChevronUp } from 'lucide-react';
+import { Download, ThumbsUp, ThumbsDown, Sparkles, User, Shirt, Palette, ArrowUpCircle, Image, Maximize2, Camera, Video, FileImage } from 'lucide-react';
 import MinimalChatControls from './MinimalChatControls';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
