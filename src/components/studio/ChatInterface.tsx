@@ -459,7 +459,6 @@ interface ResultCardProps {
 }
 
 function ResultCard({ result, onChainWorkflow }: ResultCardProps) {
-  const suggestions = getTopSuggestions(result.workflowType, 3);
   return (
     <div className="flex justify-start">
       <div className="max-w-3xl w-full space-y-3">
@@ -482,15 +481,10 @@ function ResultCard({ result, onChainWorkflow }: ResultCardProps) {
               key={`${result.id}-${index}`}
               imageUrl={imageUrl}
               onChainWorkflow={onChainWorkflow}
+              workflowType={result.workflowType}
             />
           ))}
         </div>
-
-        <WorkflowSuggestions
-          suggestions={suggestions}
-          onSelectWorkflow={(workflowId) => onChainWorkflow(workflowId, result.imageUrls[0])}
-          imageUrl={result.imageUrls[0]}
-        />
 
         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-1">
           <span>{result.timestamp.toLocaleString()}</span>
@@ -505,11 +499,13 @@ function ResultCard({ result, onChainWorkflow }: ResultCardProps) {
 interface ImageCardProps {
   imageUrl: string;
   onChainWorkflow: (workflowId: string, imageUrl: string) => void;
+  workflowType: string;
 }
 
-function ImageCard({ imageUrl, onChainWorkflow }: ImageCardProps) {
+function ImageCard({ imageUrl, onChainWorkflow, workflowType }: ImageCardProps) {
   const [feedback, setFeedback] = useState<'like' | 'dislike' | null>(null);
   const [showActions, setShowActions] = useState(false);
+  const suggestions = getTopSuggestions(workflowType, 2);
 
   const handleDownload = () => {
     const link = document.createElement('a');
@@ -535,69 +531,78 @@ function ImageCard({ imageUrl, onChainWorkflow }: ImageCardProps) {
   };
 
   return (
-    <div
-      className="group relative"
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
-    >
-      <div className="relative rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow-md hover:shadow-xl transition-all">
-        <img
-          src={imageUrl}
-          alt="Generated result"
-          className="w-full h-auto"
-        />
-        <div
-          className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity ${
-            showActions ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
-        <div
-          className={`absolute bottom-3 left-3 right-3 flex items-center justify-between transition-all ${
-            showActions ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
-          }`}
-        >
-          <div className="flex gap-2">
-            <button
-              onClick={() => setFeedback(feedback === 'like' ? null : 'like')}
-              className={`p-2 rounded-lg backdrop-blur-md transition-all ${
-                feedback === 'like'
-                  ? 'bg-green-500 text-white scale-110'
-                  : 'bg-white/90 dark:bg-gray-900/90 text-gray-700 dark:text-gray-300 hover:scale-110'
-              }`}
-              title="Like"
-            >
-              <ThumbsUp size={16} />
-            </button>
-            <button
-              onClick={() => setFeedback(feedback === 'dislike' ? null : 'dislike')}
-              className={`p-2 rounded-lg backdrop-blur-md transition-all ${
-                feedback === 'dislike'
-                  ? 'bg-red-500 text-white scale-110'
-                  : 'bg-white/90 dark:bg-gray-900/90 text-gray-700 dark:text-gray-300 hover:scale-110'
-              }`}
-              title="Dislike"
-            >
-              <ThumbsDown size={16} />
-            </button>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handleShare}
-              className="p-2 bg-white/90 dark:bg-gray-900/90 hover:scale-110 rounded-lg backdrop-blur-md transition-all text-gray-700 dark:text-gray-300"
-              title="Share"
-            >
-              <Share2 size={16} />
-            </button>
-            <button
-              onClick={handleDownload}
-              className="p-2 bg-white/90 dark:bg-gray-900/90 hover:scale-110 rounded-lg backdrop-blur-md transition-all text-gray-700 dark:text-gray-300"
-              title="Download"
-            >
-              <Download size={16} />
-            </button>
+    <div className="space-y-2">
+      <div
+        className="group relative"
+        onMouseEnter={() => setShowActions(true)}
+        onMouseLeave={() => setShowActions(false)}
+      >
+        <div className="relative rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow-md hover:shadow-xl transition-all">
+          <img
+            src={imageUrl}
+            alt="Generated result"
+            className="w-full h-auto"
+          />
+          <div
+            className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity ${
+              showActions ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+          <div
+            className={`absolute bottom-3 left-3 right-3 flex items-center justify-between transition-all ${
+              showActions ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+            }`}
+          >
+            <div className="flex gap-2">
+              <button
+                onClick={() => setFeedback(feedback === 'like' ? null : 'like')}
+                className={`p-2 rounded-lg backdrop-blur-md transition-all ${
+                  feedback === 'like'
+                    ? 'bg-green-500 text-white scale-110'
+                    : 'bg-white/90 dark:bg-gray-900/90 text-gray-700 dark:text-gray-300 hover:scale-110'
+                }`}
+                title="Like"
+              >
+                <ThumbsUp size={16} />
+              </button>
+              <button
+                onClick={() => setFeedback(feedback === 'dislike' ? null : 'dislike')}
+                className={`p-2 rounded-lg backdrop-blur-md transition-all ${
+                  feedback === 'dislike'
+                    ? 'bg-red-500 text-white scale-110'
+                    : 'bg-white/90 dark:bg-gray-900/90 text-gray-700 dark:text-gray-300 hover:scale-110'
+                }`}
+                title="Dislike"
+              >
+                <ThumbsDown size={16} />
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleShare}
+                className="p-2 bg-white/90 dark:bg-gray-900/90 hover:scale-110 rounded-lg backdrop-blur-md transition-all text-gray-700 dark:text-gray-300"
+                title="Share"
+              >
+                <Share2 size={16} />
+              </button>
+              <button
+                onClick={handleDownload}
+                className="p-2 bg-white/90 dark:bg-gray-900/90 hover:scale-110 rounded-lg backdrop-blur-md transition-all text-gray-700 dark:text-gray-300"
+                title="Download"
+              >
+                <Download size={16} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {suggestions.length > 0 && (
+        <WorkflowSuggestions
+          suggestions={suggestions}
+          onSelectWorkflow={(workflowId) => onChainWorkflow(workflowId, imageUrl)}
+        />
+      )}
     </div>
   );
 }
