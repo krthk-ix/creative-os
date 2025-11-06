@@ -16,6 +16,7 @@ export interface Database {
           full_name: string | null
           avatar_url: string | null
           company_name: string | null
+          bio: string | null
           created_at: string
           updated_at: string
         }
@@ -25,6 +26,7 @@ export interface Database {
           full_name?: string | null
           avatar_url?: string | null
           company_name?: string | null
+          bio?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -34,6 +36,7 @@ export interface Database {
           full_name?: string | null
           avatar_url?: string | null
           company_name?: string | null
+          bio?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -79,7 +82,15 @@ export interface Database {
           status: string
           input_url: string | null
           output_url: string | null
+          output_urls: string[] | null
+          external_job_id: string | null
+          error_message: string | null
           metadata: Json
+          brand_name: string | null
+          campaign_name: string | null
+          tags: string[] | null
+          workflow_name: string | null
+          image_url: string | null
           created_at: string
           completed_at: string | null
         }
@@ -88,13 +99,21 @@ export interface Database {
           project_id?: string | null
           user_id: string
           generation_type: string
-          method: string
+          method?: string
           input_data?: Json
           workflow_id?: string | null
           status?: string
           input_url?: string | null
           output_url?: string | null
+          output_urls?: string[] | null
+          external_job_id?: string | null
+          error_message?: string | null
           metadata?: Json
+          brand_name?: string | null
+          campaign_name?: string | null
+          tags?: string[] | null
+          workflow_name?: string | null
+          image_url?: string | null
           created_at?: string
           completed_at?: string | null
         }
@@ -109,7 +128,15 @@ export interface Database {
           status?: string
           input_url?: string | null
           output_url?: string | null
+          output_urls?: string[] | null
+          external_job_id?: string | null
+          error_message?: string | null
           metadata?: Json
+          brand_name?: string | null
+          campaign_name?: string | null
+          tags?: string[] | null
+          workflow_name?: string | null
+          image_url?: string | null
           created_at?: string
           completed_at?: string | null
         }
@@ -298,6 +325,47 @@ export interface Database {
           message?: string
           is_staff?: boolean
           created_at?: string
+        }
+      }
+      user_settings: {
+        Row: {
+          id: string
+          user_id: string
+          email_notifications: boolean
+          weekly_summary: boolean
+          product_updates: boolean
+          usage_analytics: boolean
+          auto_save: boolean
+          default_quality: string
+          language: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          email_notifications?: boolean
+          weekly_summary?: boolean
+          product_updates?: boolean
+          usage_analytics?: boolean
+          auto_save?: boolean
+          default_quality?: string
+          language?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          email_notifications?: boolean
+          weekly_summary?: boolean
+          product_updates?: boolean
+          usage_analytics?: boolean
+          auto_save?: boolean
+          default_quality?: string
+          language?: string
+          created_at?: string
+          updated_at?: string
         }
       }
     }

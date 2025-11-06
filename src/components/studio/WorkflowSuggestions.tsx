@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpCircle, Maximize2, Camera, Shirt, FileImage, Video } from 'lucide-react';
+import { ArrowRight, ArrowUpCircle, Maximize2, Camera, Shirt, FileImage, Video, type LucideIcon } from 'lucide-react';
 import { WorkflowRelationship } from '../../lib/workflowChaining';
 
 interface WorkflowSuggestionsProps {
@@ -6,7 +6,7 @@ interface WorkflowSuggestionsProps {
   onSelectWorkflow: (workflowId: string) => void;
 }
 
-const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+const iconMap: Record<string, LucideIcon> = {
   Shirt,
   Camera,
   ArrowUpCircle,

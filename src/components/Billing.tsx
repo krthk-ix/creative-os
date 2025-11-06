@@ -89,7 +89,7 @@ export default function Billing() {
     }
   };
 
-  const handleUpgrade = async (planId: string) => {
+  const handleUpgrade = async (_planId: string) => {
     alert('Upgrade functionality would be connected to payment processor');
   };
 

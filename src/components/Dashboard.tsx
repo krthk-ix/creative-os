@@ -46,7 +46,7 @@ export default function Dashboard() {
         selectedWorkflow={selectedWorkflow}
         onSelectWorkflow={handleWorkflowSelect}
         activeView={currentView}
-        onViewChange={setCurrentView}
+        onViewChange={(view) => setCurrentView(view as View)}
         isCollapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />

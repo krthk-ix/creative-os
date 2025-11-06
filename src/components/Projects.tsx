@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Filter, Search, Calendar, Tag, Image as ImageIcon, X } from 'lucide-react';
+import { Plus, Filter, Search, Image as ImageIcon, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 

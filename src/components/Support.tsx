@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, MessageSquare, AlertCircle, CheckCircle, Clock, Mail, Book, MessageCircleQuestion, X } from 'lucide-react';
+import { Plus, MessageSquare, Mail, Book, MessageCircleQuestion, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 
