@@ -78,3 +78,55 @@
     background-color: #1A1A1A;
   }
 }
+
+@layer utilities {
+  /* Custom scrollbar styles */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-track-gray-200::-webkit-scrollbar-track {
+    background-color: #e5e7eb;
+    border-radius: 3px;
+  }
+
+  .scrollbar-track-gray-800::-webkit-scrollbar-track {
+    background-color: #353535;
+    border-radius: 3px;
+  }
+
+  .scrollbar-thumb-gray-400::-webkit-scrollbar-thumb {
+    background-color: #9ca3af;
+    border-radius: 3px;
+  }
+
+  .scrollbar-thumb-gray-400::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7280;
+  }
+
+  .scrollbar-thumb-gray-700::-webkit-scrollbar-thumb {
+    background-color: #4A4A4A;
+    border-radius: 3px;
+  }
+
+  .scrollbar-thumb-gray-700::-webkit-scrollbar-thumb:hover {
+    background-color: #5A5A5A;
+  }
+
+  .dark .scrollbar-track-gray-800::-webkit-scrollbar-track {
+    background-color: #353535;
+  }
+
+  .dark .scrollbar-thumb-gray-700::-webkit-scrollbar-thumb {
+    background-color: #4A4A4A;
+  }
+
+  .dark .scrollbar-thumb-gray-700::-webkit-scrollbar-thumb:hover {
+    background-color: #5A5A5A;
+  }
+}

@@ -77,13 +77,13 @@ export default function WorkflowOptions({ workflowType, onConfirm }: WorkflowOpt
   };
 
   return (
-    <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700">
+    <div className="bg-gray-800/50 rounded-2xl p-4 border border-gray-700 flex flex-col">
       <div className="flex items-center gap-2 mb-4">
         <Settings className="text-blue-400" size={20} />
         <h3 className="text-white font-medium">Configure Options</h3>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 flex-1 overflow-y-auto max-h-[calc(100vh-16rem)] pb-4">
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">Method</label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -251,9 +251,12 @@ export default function WorkflowOptions({ workflowType, onConfirm }: WorkflowOpt
           </div>
         </div>
 
+      </div>
+
+      <div className="sticky bottom-0 pt-4 bg-gray-800/50 -mb-4 -mx-4 px-4 pb-4 border-t border-gray-700/50 mt-4">
         <button
           onClick={() => onConfirm(settings)}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors shadow-lg"
         >
           Generate
         </button>
