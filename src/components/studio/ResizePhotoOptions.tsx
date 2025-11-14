@@ -44,6 +44,13 @@ const socialMediaSizes: SizePreset[] = [
 ];
 
 type ViewMode = 'presets' | 'custom';
+type FillMethod = 'generative' | 'stretch' | 'crop';
+
+interface GenerativePreview {
+  id: string;
+  url: string;
+  selected: boolean;
+}
 
 export default function ResizePhotoOptions({ onGenerate, preloadedImage, onImageUsed }: ResizePhotoOptionsProps) {
   const [inputImage, setInputImage] = useState<File | null>(null);
@@ -54,6 +61,10 @@ export default function ResizePhotoOptions({ onGenerate, preloadedImage, onImage
   const [customHeight, setCustomHeight] = useState(1080);
   const [selectedCategory, setSelectedCategory] = useState('Facebook');
   const [isFromChain, setIsFromChain] = useState(false);
+  const [fillMethod, setFillMethod] = useState<FillMethod>('generative');
+  const [showPreviews, setShowPreviews] = useState(false);
+  const [generativePreviews, setGenerativePreviews] = useState<GenerativePreview[]>([]);
+  const [selectedPreview, setSelectedPreview] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -242,7 +253,55 @@ export default function ResizePhotoOptions({ onGenerate, preloadedImage, onImage
       )}
 
       {viewMode === 'custom' && (
-        <div>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
+              Fill Method
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                onClick={() => setFillMethod('generative')}
+                className={`p-2.5 rounded-lg text-left transition-all border text-xs ${
+                  fillMethod === 'generative'
+                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                }`}
+              >
+                <div className="font-semibold mb-0.5">Generative Fill</div>
+                <div className={`text-xs ${fillMethod === 'generative' ? 'text-white/70 dark:text-gray-900/70' : 'text-gray-500 dark:text-gray-400'}`}>
+                  AI extends bg
+                </div>
+              </button>
+              <button
+                onClick={() => setFillMethod('stretch')}
+                className={`p-2.5 rounded-lg text-left transition-all border text-xs ${
+                  fillMethod === 'stretch'
+                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                }`}
+              >
+                <div className="font-semibold mb-0.5">Stretch</div>
+                <div className={`text-xs ${fillMethod === 'stretch' ? 'text-white/70 dark:text-gray-900/70' : 'text-gray-500 dark:text-gray-400'}`}>
+                  Fit to size
+                </div>
+              </button>
+              <button
+                onClick={() => setFillMethod('crop')}
+                className={`p-2.5 rounded-lg text-left transition-all border text-xs ${
+                  fillMethod === 'crop'
+                    ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                }`}
+              >
+                <div className="font-semibold mb-0.5">Smart Crop</div>
+                <div className={`text-xs ${fillMethod === 'crop' ? 'text-white/70 dark:text-gray-900/70' : 'text-gray-500 dark:text-gray-400'}`}>
+                  Center crop
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div>
           <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wide">
             Custom Dimensions
           </label>
@@ -277,20 +336,84 @@ export default function ResizePhotoOptions({ onGenerate, preloadedImage, onImage
           <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
             Aspect Ratio: {(customWidth / customHeight).toFixed(2)}:1
           </div>
+          </div>
+
+          {fillMethod === 'generative' && !showPreviews && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+              <p className="text-xs text-blue-800 dark:text-blue-200 font-medium mb-1">
+                Generative Fill Preview
+              </p>
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                We'll generate 3 preview options for you to choose from before final render.
+              </p>
+            </div>
+          )}
+
+          {showPreviews && generativePreviews.length > 0 && (
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
+                Choose Best Preview (3 options)
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                {generativePreviews.map((preview) => (
+                  <button
+                    key={preview.id}
+                    onClick={() => setSelectedPreview(preview.id)}
+                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                      selectedPreview === preview.id
+                        ? 'border-gray-900 dark:border-white ring-2 ring-gray-900 dark:ring-white'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <img
+                      src={preview.url}
+                      alt={`Preview ${preview.id}`}
+                      className="w-full h-full object-cover"
+                    />
+                    {selectedPreview === preview.id && (
+                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                        <div className="bg-white dark:bg-black rounded-full p-2">
+                          <Check size={20} className="text-gray-900 dark:text-white" />
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute bottom-2 left-2 right-2 bg-black/60 backdrop-blur-sm rounded px-2 py-1">
+                      <span className="text-xs text-white font-medium">Option {preview.id}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Select your preferred version, then click "Render Final" below
+              </p>
+            </div>
+          )}
         </div>
       )}
 
-      <button
-        onClick={handleGenerate}
-        disabled={(!inputImage && !imagePreview) || (viewMode === 'presets' && !selectedPreset)}
-        className="relative w-full bg-brand hover:bg-brand/90 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg transition-colors overflow-hidden group"
-      >
-        <span className="relative z-10 flex items-center justify-center gap-2">
-          <Sparkles size={16} className="animate-pulse" />
-          Resize Image
-        </span>
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-      </button>
+      {showPreviews && selectedPreview ? (
+        <button
+          onClick={handleGenerate}
+          className="relative w-full bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-100 text-white dark:text-black font-semibold py-2.5 rounded-lg transition-colors overflow-hidden group"
+        >
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            <Check size={16} />
+            Render Final Image
+          </span>
+        </button>
+      ) : (
+        <button
+          onClick={handleGenerate}
+          disabled={(!inputImage && !imagePreview) || (viewMode === 'presets' && !selectedPreset)}
+          className="relative w-full bg-brand hover:bg-brand/90 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg transition-colors overflow-hidden group"
+        >
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            <Sparkles size={16} className="animate-pulse" />
+            {fillMethod === 'generative' && viewMode === 'custom' ? 'Generate 3 Previews' : 'Resize Image'}
+          </span>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+        </button>
+      )}
     </div>
   );
 }
