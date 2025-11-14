@@ -1,10 +1,21 @@
 import { useState } from 'react';
-import { Upload, Download, ChevronRight, Trash2, CheckCircle2, AlertCircle, Loader2, User, Shirt, Palette, ArrowUpCircle, Image, Maximize2, Camera, Video, FileImage } from 'lucide-react';
+import { Upload, Download, ChevronRight, Trash2, CheckCircle2, AlertCircle, Loader2, User, Shirt, Palette, ArrowUpCircle, Image, Maximize2, Camera, Video, FileImage, Settings } from 'lucide-react';
+import HumanModelOptions from './studio/HumanModelOptions';
+import VirtualTryonOptions from './studio/VirtualTryonOptions';
+import ColorChangeOptions from './studio/ColorChangeOptions';
+import UpscaleOptions from './studio/UpscaleOptions';
+import GraphicTransferOptions from './studio/GraphicTransferOptions';
+import ResizePhotoOptions from './studio/ResizePhotoOptions';
+import BackgroundOptions from './studio/BackgroundOptions';
+import LifestyleOptions from './studio/LifestyleOptions';
+import VideoGenOptions from './studio/VideoGenOptions';
+import SocialPosterOptions from './studio/SocialPosterOptions';
 
 interface BulkJob {
   id: string;
   workflow: string;
   images: File[];
+  options: Record<string, unknown>;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   progress: number;
   results: string[];
@@ -29,6 +40,8 @@ export default function BulkOperations() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [bulkJobs, setBulkJobs] = useState<BulkJob[]>([]);
   const [showWorkflowSelect, setShowWorkflowSelect] = useState(true);
+  const [showOptions, setShowOptions] = useState(false);
+  const [workflowOptions, setWorkflowOptions] = useState<Record<string, unknown>>({});
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -39,6 +52,11 @@ export default function BulkOperations() {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleWorkflowOptionsSubmit = (data: Record<string, unknown>) => {
+    setWorkflowOptions(data);
+    setShowOptions(false);
+  };
+
   const startBulkJob = () => {
     if (!selectedWorkflow || uploadedFiles.length === 0) return;
 
@@ -46,6 +64,7 @@ export default function BulkOperations() {
       id: Date.now().toString(),
       workflow: selectedWorkflow,
       images: uploadedFiles,
+      options: workflowOptions,
       status: 'pending',
       progress: 0,
       results: [],
@@ -53,6 +72,7 @@ export default function BulkOperations() {
 
     setBulkJobs(prev => [newJob, ...prev]);
     setUploadedFiles([]);
+    setWorkflowOptions({});
     setShowWorkflowSelect(true);
     setSelectedWorkflow('');
 
@@ -81,6 +101,35 @@ export default function BulkOperations() {
         return <Loader2 size={20} className="text-blue-600 dark:text-blue-400 animate-spin" />;
       default:
         return <Loader2 size={20} className="text-gray-400" />;
+    }
+  };
+
+  const renderWorkflowOptions = () => {
+    const dummyImage = uploadedFiles[0] ? URL.createObjectURL(uploadedFiles[0]) : null;
+
+    switch (selectedWorkflow) {
+      case 'model':
+        return <HumanModelOptions onGenerate={handleWorkflowOptionsSubmit} preloadedImage={dummyImage} onImageUsed={() => {}} />;
+      case 'tryon':
+        return <VirtualTryonOptions onGenerate={handleWorkflowOptionsSubmit} preloadedImage={dummyImage} onImageUsed={() => {}} />;
+      case 'color_change':
+        return <ColorChangeOptions onGenerate={handleWorkflowOptionsSubmit} preloadedImage={dummyImage} onImageUsed={() => {}} />;
+      case 'upscale':
+        return <UpscaleOptions onGenerate={handleWorkflowOptionsSubmit} preloadedImage={dummyImage} onImageUsed={() => {}} />;
+      case 'graphic_transfer':
+        return <GraphicTransferOptions onGenerate={handleWorkflowOptionsSubmit} preloadedImage={dummyImage} onImageUsed={() => {}} />;
+      case 'resize':
+        return <ResizePhotoOptions onGenerate={handleWorkflowOptionsSubmit} preloadedImage={dummyImage} onImageUsed={() => {}} />;
+      case 'background':
+        return <BackgroundOptions onGenerate={handleWorkflowOptionsSubmit} preloadedImage={dummyImage} onImageUsed={() => {}} />;
+      case 'lifestyle':
+        return <LifestyleOptions onGenerate={handleWorkflowOptionsSubmit} preloadedImage={dummyImage} onImageUsed={() => {}} />;
+      case 'video':
+        return <VideoGenOptions onGenerate={handleWorkflowOptionsSubmit} preloadedImage={dummyImage} onImageUsed={() => {}} />;
+      case 'poster':
+        return <SocialPosterOptions onGenerate={handleWorkflowOptionsSubmit} preloadedImage={dummyImage} onImageUsed={() => {}} />;
+      default:
+        return null;
     }
   };
 
@@ -128,6 +177,38 @@ export default function BulkOperations() {
               })}
             </div>
           </div>
+        ) : showOptions ? (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                {currentWorkflow && (
+                  <>
+                    <div className="w-10 h-10 rounded-lg bg-gray-900 dark:bg-white flex items-center justify-center">
+                      <currentWorkflow.icon size={20} className="text-white dark:text-black" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                        Configure {currentWorkflow.name} Options
+                      </h2>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        These settings will apply to all {uploadedFiles.length} images
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+              <button
+                onClick={() => setShowOptions(false)}
+                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              >
+                Back to Upload
+              </button>
+            </div>
+
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 max-w-2xl mx-auto">
+              {renderWorkflowOptions()}
+            </div>
+          </div>
         ) : (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
@@ -153,6 +234,7 @@ export default function BulkOperations() {
                   setShowWorkflowSelect(true);
                   setSelectedWorkflow('');
                   setUploadedFiles([]);
+                  setWorkflowOptions({});
                 }}
                 className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               >
@@ -227,11 +309,39 @@ export default function BulkOperations() {
               </div>
             )}
 
-            {/* Start Button */}
+            {/* Configure Options Button */}
             {uploadedFiles.length > 0 && (
               <button
+                onClick={() => setShowOptions(true)}
+                className="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl hover:opacity-90 transition-opacity font-medium flex items-center justify-center gap-2 mb-4"
+              >
+                <Settings size={20} />
+                Configure Workflow Options
+                <ChevronRight size={20} />
+              </button>
+            )}
+
+            {/* Start Button (only if options configured) */}
+            {uploadedFiles.length > 0 && Object.keys(workflowOptions).length > 0 && (
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 mb-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 size={20} className="text-green-600 dark:text-green-400 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-green-900 dark:text-green-100 mb-1">
+                      Options Configured
+                    </p>
+                    <p className="text-xs text-green-700 dark:text-green-300">
+                      Ready to process {uploadedFiles.length} images with your configured settings
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {uploadedFiles.length > 0 && Object.keys(workflowOptions).length > 0 && (
+              <button
                 onClick={startBulkJob}
-                className="w-full py-4 bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl hover:opacity-90 transition-opacity font-medium flex items-center justify-center gap-2"
+                className="w-full py-4 bg-brand hover:bg-brand/90 text-white rounded-xl font-medium flex items-center justify-center gap-2"
               >
                 Start Bulk Processing
                 <ChevronRight size={20} />
@@ -345,12 +455,12 @@ export default function BulkOperations() {
         )}
 
         {/* Empty State */}
-        {bulkJobs.length === 0 && !showWorkflowSelect && uploadedFiles.length === 0 && (
+        {bulkJobs.length === 0 && showWorkflowSelect && (
           <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-12 text-center">
             <FileImage className="mx-auto mb-4 text-gray-300 dark:text-gray-700" size={48} />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No bulk jobs yet</h3>
             <p className="text-gray-500 dark:text-gray-400">
-              Upload multiple images to process them in batch
+              Select a workflow to start batch processing
             </p>
           </div>
         )}
