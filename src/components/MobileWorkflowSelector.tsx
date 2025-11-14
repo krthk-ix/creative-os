@@ -36,27 +36,29 @@ export default function MobileWorkflowSelector({ selectedWorkflow, onSelectWorkf
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="lg:hidden flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-900 rounded-lg text-gray-900 dark:text-white text-sm font-medium"
+        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-lg text-gray-900 dark:text-white text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors min-w-[140px] sm:min-w-[180px] justify-between"
       >
-        {currentWorkflow ? (
-          <>
-            <currentWorkflow.icon size={16} />
-            <span className="max-w-[100px] truncate">{currentWorkflow.name}</span>
-          </>
-        ) : (
-          <span>Select Workflow</span>
-        )}
-        <ChevronDown size={14} />
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          {currentWorkflow ? (
+            <>
+              <currentWorkflow.icon size={16} className="flex-shrink-0" />
+              <span className="truncate">{currentWorkflow.name}</span>
+            </>
+          ) : (
+            <span>Select Workflow</span>
+          )}
+        </div>
+        <ChevronDown size={14} className="flex-shrink-0" />
       </button>
 
       {/* Modal */}
       {isOpen && (
         <>
           <div
-            className="fixed inset-0 bg-black/50 z-50 lg:hidden"
+            className="fixed inset-0 bg-black/50 z-50"
             onClick={() => setIsOpen(false)}
           />
-          <div className="fixed inset-x-0 bottom-0 bg-white dark:bg-black rounded-t-2xl z-50 lg:hidden max-h-[80vh] overflow-hidden flex flex-col">
+          <div className="fixed inset-x-0 bottom-0 lg:inset-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-2xl bg-white dark:bg-black rounded-t-2xl lg:rounded-2xl z-50 max-h-[80vh] lg:max-h-[600px] overflow-hidden flex flex-col shadow-2xl">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -72,7 +74,7 @@ export default function MobileWorkflowSelector({ selectedWorkflow, onSelectWorkf
 
             {/* Workflow Grid */}
             <div className="overflow-y-auto p-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {workflows.map((workflow) => {
                   const Icon = workflow.icon;
                   const isSelected = selectedWorkflow === workflow.id;
