@@ -10,8 +10,9 @@ import Billing from './Billing';
 import Support from './Support';
 import Settings from './Settings';
 import History from './History';
+import BulkOperations from './BulkOperations';
 
-type View = 'studio' | 'projects' | 'profile' | 'billing' | 'support' | 'settings' | 'history';
+type View = 'studio' | 'projects' | 'profile' | 'billing' | 'support' | 'settings' | 'history' | 'bulk';
 
 export default function Dashboard() {
   const [currentView, setCurrentView] = useState<View>('studio');
@@ -33,6 +34,8 @@ export default function Dashboard() {
         return <Projects />;
       case 'history':
         return <History />;
+      case 'bulk':
+        return <BulkOperations />;
       case 'profile':
         return <Profile />;
       case 'billing':

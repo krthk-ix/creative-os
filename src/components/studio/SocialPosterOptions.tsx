@@ -69,6 +69,13 @@ export default function SocialPosterOptions({ onGenerate, preloadedImage, onImag
   const [selectedPreset, setSelectedPreset] = useState<SizePreset | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('Instagram');
   const [isFromChain, setIsFromChain] = useState(false);
+  const [addText, setAddText] = useState(false);
+  const [title, setTitle] = useState('');
+  const [subtitle, setSubtitle] = useState('');
+  const [logoImage, setLogoImage] = useState<File | null>(null);
+  const [logoImagePreview, setLogoImagePreview] = useState<string | null>(null);
+
+  const logoFileRef = useRef<HTMLInputElement>(null);
 
   const inputFileRef = useRef<HTMLInputElement>(null);
   const referenceFileRef = useRef<HTMLInputElement>(null);
@@ -110,6 +117,18 @@ export default function SocialPosterOptions({ onGenerate, preloadedImage, onImag
     }
   };
 
+  const handleLogoImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setLogoImage(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setLogoImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleGenerate = () => {
     const data: Record<string, unknown> = {
       mode,
@@ -127,6 +146,16 @@ export default function SocialPosterOptions({ onGenerate, preloadedImage, onImag
       data.height = selectedPreset.height;
       data.presetName = selectedPreset.name;
       data.category = selectedPreset.category;
+    }
+
+    if (addText) {
+      data.addText = true;
+      data.title = title;
+      data.subtitle = subtitle;
+    }
+
+    if (logoImage) {
+      data.logoImage = logoImage;
     }
 
     onGenerate(data);
@@ -309,6 +338,95 @@ export default function SocialPosterOptions({ onGenerate, preloadedImage, onImag
           )}
         </div>
       )}
+
+      <div>
+        <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-3 uppercase tracking-wide">
+          Text Options
+        </label>
+        <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Add Text Overlay</span>
+            <button
+              onClick={() => setAddText(!addText)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                addText ? 'bg-gray-900 dark:bg-white' : 'bg-gray-300 dark:bg-gray-700'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-black transition-transform ${
+                  addText ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+
+          {addText && (
+            <div className="space-y-3 pt-2">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                  Title Text
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter title text"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5">
+                  Subtitle Text
+                </label>
+                <input
+                  type="text"
+                  value={subtitle}
+                  onChange={(e) => setSubtitle(e.target.value)}
+                  placeholder="Enter subtitle text"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wide">
+          Logo Upload (Optional)
+        </label>
+        <input
+          ref={logoFileRef}
+          type="file"
+          accept="image/*"
+          onChange={handleLogoImageChange}
+          className="hidden"
+        />
+        <button
+          onClick={() => logoFileRef.current?.click()}
+          className="w-full h-24 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl hover:border-brand dark:hover:border-brand transition-all flex flex-col items-center justify-center gap-2 text-gray-500 dark:text-gray-400 hover:text-brand dark:hover:text-brand group"
+        >
+          {logoImagePreview ? (
+            <div className="relative w-full h-full p-2">
+              <img
+                src={logoImagePreview}
+                alt="Logo"
+                className="w-full h-full object-contain rounded-lg"
+              />
+            </div>
+          ) : (
+            <>
+              <Upload size={20} className="group-hover:scale-110 transition-transform" />
+              <span className="text-xs font-medium">Upload brand logo</span>
+            </>
+          )}
+        </button>
+        {logoImage && (
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            {logoImage.name}
+          </p>
+        )}
+      </div>
 
       <div className="space-y-3">
         <div>

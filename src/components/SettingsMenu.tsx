@@ -1,4 +1,4 @@
-import { X, Moon, Sun, HelpCircle, LogOut, Sparkles, FolderOpen, History as HistoryIcon, User, CreditCard, Settings as SettingsIcon } from 'lucide-react';
+import { X, Moon, Sun, HelpCircle, LogOut, Sparkles, FolderOpen, History as HistoryIcon, User, CreditCard, Settings as SettingsIcon, Layers } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -19,6 +19,7 @@ export default function SettingsMenu({ isOpen, onClose, activeView, onViewChange
     { id: 'studio', icon: Sparkles, label: 'Studio', description: 'Create AI visuals' },
     { id: 'projects', icon: FolderOpen, label: 'Projects', description: 'Manage your work' },
     { id: 'history', icon: HistoryIcon, label: 'History', description: 'Past generations' },
+    { id: 'bulk', icon: Layers, label: 'Bulk Operations', description: 'Batch processing' },
     { id: 'profile', icon: User, label: 'Profile', description: 'Account settings' },
     { id: 'billing', icon: CreditCard, label: 'Billing', description: 'Plans & invoices' },
     { id: 'support', icon: HelpCircle, label: 'Support', description: 'Get help' },
