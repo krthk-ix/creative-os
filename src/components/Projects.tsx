@@ -311,7 +311,7 @@ export default function Projects() {
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-50 dark:bg-black border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
-                  placeholder="Comma-separated tags (e.g., fashion, summer, sale)"
+                  placeholder="Comma-separated tags (e.g., product, portrait, commercial)"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                   Separate multiple tags with commas

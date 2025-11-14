@@ -15,21 +15,21 @@ interface PromptPreset {
 const promptsByWorkflow: Record<string, PromptPreset[]> = {
   model: [
     { text: 'Professional business portrait, neutral background', color: 'from-gray-700 to-gray-800' },
-    { text: 'Fashion model, studio lighting, haute couture', color: 'from-pink-900 to-purple-900' },
+    { text: 'Studio portrait, professional lighting, elegant pose', color: 'from-pink-900 to-purple-900' },
     { text: 'Casual outdoor portrait, natural lighting', color: 'from-green-700 to-blue-700' },
     { text: 'Athletic fitness model, dynamic pose', color: 'from-orange-700 to-red-700' },
   ],
   tryon: [
-    { text: 'Model wearing casual summer outfit', color: 'from-yellow-600 to-orange-600' },
-    { text: 'Professional business attire on model', color: 'from-gray-700 to-blue-800' },
-    { text: 'Evening wear on elegant model', color: 'from-purple-900 to-pink-900' },
-    { text: 'Streetwear fashion on urban model', color: 'from-slate-800 to-zinc-800' },
+    { text: 'Model in casual style, natural lighting', color: 'from-yellow-600 to-orange-600' },
+    { text: 'Professional look, studio setting', color: 'from-gray-700 to-blue-800' },
+    { text: 'Elegant style, sophisticated pose', color: 'from-purple-900 to-pink-900' },
+    { text: 'Urban style, modern aesthetic', color: 'from-slate-800 to-zinc-800' },
   ],
   color_change: [
-    { text: 'Change dress color to red', color: 'from-red-600 to-red-800' },
+    { text: 'Change product color to red', color: 'from-red-600 to-red-800' },
     { text: 'Make background blue', color: 'from-blue-600 to-blue-800' },
     { text: 'Convert to black and white', color: 'from-gray-600 to-gray-900' },
-    { text: 'Change car color to metallic silver', color: 'from-slate-400 to-slate-600' },
+    { text: 'Change item color to metallic silver', color: 'from-slate-400 to-slate-600' },
   ],
   background: [
     { text: 'White studio background', color: 'from-gray-100 to-gray-300' },

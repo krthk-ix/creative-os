@@ -8,7 +8,7 @@ export interface WorkflowRelationship {
 
 export const workflowRelationships: Record<string, WorkflowRelationship[]> = {
   model: [
-    { id: 'tryon', name: 'Virtual Try-On', description: 'Try clothes on this model', icon: 'Shirt', priority: 1 },
+    { id: 'tryon', name: 'Virtual Try-On', description: 'Try items on this model', icon: 'Shirt', priority: 1 },
     { id: 'background', name: 'Change Background', description: 'Place in different setting', icon: 'Camera', priority: 2 },
     { id: 'lifestyle', name: 'Lifestyle Shot', description: 'Create lifestyle scene', icon: 'Camera', priority: 3 },
     { id: 'upscale', name: 'Upscale', description: 'Enhance quality', icon: 'ArrowUpCircle', priority: 4 },

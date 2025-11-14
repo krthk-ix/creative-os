@@ -36,7 +36,7 @@ interface WorkflowOption {
 
 const workflows: WorkflowOption[] = [
   { id: 'model', name: 'Human Model', icon: User, description: 'Generate AI models' },
-  { id: 'tryon', name: 'Virtual Try-On', icon: Shirt, description: 'Try clothes on models' },
+  { id: 'tryon', name: 'Virtual Try-On', icon: Shirt, description: 'Try items on models' },
   { id: 'color_change', name: 'Color Change', icon: Palette, description: 'Change product colors' },
   { id: 'upscale', name: 'Upscale', icon: ArrowUpCircle, description: 'Enhance image quality' },
   { id: 'graphic_transfer', name: 'Graphic Transfer', icon: Image, description: 'Apply graphics' },

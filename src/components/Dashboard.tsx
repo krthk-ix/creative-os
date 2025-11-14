@@ -9,8 +9,9 @@ import Profile from './Profile';
 import Billing from './Billing';
 import Support from './Support';
 import Settings from './Settings';
+import History from './History';
 
-type View = 'studio' | 'projects' | 'profile' | 'billing' | 'support' | 'settings';
+type View = 'studio' | 'projects' | 'profile' | 'billing' | 'support' | 'settings' | 'history';
 
 export default function Dashboard() {
   const [currentView, setCurrentView] = useState<View>('studio');
@@ -30,6 +31,8 @@ export default function Dashboard() {
         return <Studio selectedWorkflow={selectedWorkflow} workflowName={workflowName} onSelectWorkflow={handleWorkflowSelect} />;
       case 'projects':
         return <Projects />;
+      case 'history':
+        return <History />;
       case 'profile':
         return <Profile />;
       case 'billing':
@@ -85,6 +88,11 @@ export default function Dashboard() {
       <SettingsMenu
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
+        activeView={currentView}
+        onViewChange={(view) => {
+          setCurrentView(view as View);
+          setIsMenuOpen(false);
+        }}
       />
     </div>
   );

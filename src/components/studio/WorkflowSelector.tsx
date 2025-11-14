@@ -28,7 +28,7 @@ const workflows: WorkflowOption[] = [
   {
     id: 'tryon',
     name: 'Virtual Try-On',
-    description: 'Try clothes on any model',
+    description: 'Try items on any model',
     icon: Shirt,
   },
   {

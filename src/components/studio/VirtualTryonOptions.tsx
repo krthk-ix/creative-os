@@ -17,7 +17,7 @@ interface ImageUpload {
 }
 
 const tryonTypes = [
-  { id: 'fashion' as const, label: 'Fashion', description: 'Clothes & apparel' },
+  { id: 'fashion' as const, label: 'Fashion', description: 'Clothing & items' },
   { id: 'watch' as const, label: 'Watch', description: 'Watches & bands' },
   { id: 'shoes' as const, label: 'Shoes', description: 'Footwear' },
   { id: 'jewelry' as const, label: 'Jewelry', description: 'Accessories' },
