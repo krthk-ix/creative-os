@@ -1,5 +1,6 @@
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { LayoutProvider } from './contexts/LayoutContext';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
 
@@ -23,9 +24,11 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
+      <LayoutProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </LayoutProvider>
     </ThemeProvider>
   );
 }
