@@ -11,7 +11,6 @@ import Support from './Support';
 import Settings from './Settings';
 import History from './History';
 import BulkOperations from './BulkOperations';
-import Walkthrough from './Walkthrough';
 
 type View = 'studio' | 'projects' | 'profile' | 'billing' | 'support' | 'settings' | 'history' | 'bulk';
 
@@ -20,7 +19,6 @@ export default function Dashboard() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedWorkflow, setSelectedWorkflow] = useState<string>('');
   const [workflowName, setWorkflowName] = useState<string>('');
-  const [showWalkthrough, setShowWalkthrough] = useState(true);
 
   const handleWorkflowSelect = (id: string, name: string) => {
     setSelectedWorkflow(id);
@@ -83,6 +81,12 @@ export default function Dashboard() {
         {renderView()}
       </main>
 
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav
+        activeView={currentView}
+        onViewChange={(view) => setCurrentView(view as View)}
+      />
+
       {/* Settings Menu */}
       <SettingsMenu
         isOpen={isMenuOpen}
@@ -93,11 +97,6 @@ export default function Dashboard() {
           setIsMenuOpen(false);
         }}
       />
-
-      {/* Walkthrough for First-Time Users */}
-      {showWalkthrough && (
-        <Walkthrough onComplete={() => setShowWalkthrough(false)} />
-      )}
     </div>
   );
 }

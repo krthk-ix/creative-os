@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Upload, Camera, Image as ImageIcon, X, AlertCircle, Info, CheckCircle, Clipboard } from 'lucide-react';
+import { Upload, Camera, Image as ImageIcon, X, AlertCircle, Info, CheckCircle } from 'lucide-react';
 
 interface ImageUploadProps {
   onUpload: (files: File[]) => void;
@@ -49,7 +49,6 @@ const calculateImageQuality = (file: File): Promise<number> => {
 export default function ImageUpload({ onUpload }: ImageUploadProps) {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [dragActive, setDragActive] = useState(false);
-  const [pasteSuccess, setPasteSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -71,42 +70,6 @@ export default function ImageUpload({ onUpload }: ImageUploadProps) {
     }
 
     setFiles((prev) => [...prev, ...uploadedFiles]);
-  };
-
-  const handlePasteFromClipboard = async () => {
-    try {
-      const clipboardItems = await navigator.clipboard.read();
-      const imageItems = clipboardItems.filter(item =>
-        item.types.some(type => type.startsWith('image/'))
-      );
-
-      if (imageItems.length === 0) {
-        alert('No image found in clipboard');
-        return;
-      }
-
-      for (const item of imageItems) {
-        for (const type of item.types) {
-          if (type.startsWith('image/')) {
-            const blob = await item.getType(type);
-            const file = new File([blob], `pasted-image-${Date.now()}.png`, { type: blob.type });
-            const quality = await calculateImageQuality(file);
-
-            setFiles((prev) => [...prev, {
-              file,
-              preview: URL.createObjectURL(file),
-              quality,
-            }]);
-
-            setPasteSuccess(true);
-            setTimeout(() => setPasteSuccess(false), 2000);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error reading clipboard:', error);
-      alert('Unable to paste from clipboard. Please try uploading the file instead.');
-    }
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -186,7 +149,7 @@ export default function ImageUpload({ onUpload }: ImageUploadProps) {
         }`}
       >
         <div className="text-center">
-          <div className="flex justify-center gap-3 mb-4">
+          <div className="flex justify-center gap-4 mb-4">
             <button
               onClick={() => fileInputRef.current?.click()}
               className="flex flex-col items-center gap-2 p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
@@ -200,18 +163,6 @@ export default function ImageUpload({ onUpload }: ImageUploadProps) {
             >
               <Camera className="text-blue-400" size={24} />
               <span className="text-sm text-gray-300">Camera</span>
-            </button>
-            <button
-              onClick={handlePasteFromClipboard}
-              className={`flex flex-col items-center gap-2 p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors relative ${
-                pasteSuccess ? 'ring-2 ring-green-500' : ''
-              }`}
-            >
-              <Clipboard className={pasteSuccess ? 'text-green-400' : 'text-blue-400'} size={24} />
-              <span className="text-sm text-gray-300">Paste</span>
-              {pasteSuccess && (
-                <CheckCircle size={16} className="absolute -top-1 -right-1 text-green-400 bg-gray-800 rounded-full" />
-              )}
             </button>
           </div>
           <p className="text-gray-400 text-sm">or drag and drop images here</p>

@@ -8,6 +8,10 @@ interface MobileBottomNavProps {
 export default function MobileBottomNav({ activeView, onViewChange }: MobileBottomNavProps) {
   const navItems = [
     { id: 'studio', name: 'Studio', icon: Sparkles },
+    { id: 'projects', name: 'Projects', icon: FolderOpen },
+    { id: 'billing', name: 'Credits', icon: CreditCard },
+    { id: 'profile', name: 'Profile', icon: UserCircle },
+    { id: 'settings', name: 'Settings', icon: Settings },
   ];
 
   return (

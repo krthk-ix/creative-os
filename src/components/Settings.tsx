@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Bell, Globe, Lock, Trash2, Save, Database, Zap, Download, Moon, Sun, LayoutGrid, Columns2 } from 'lucide-react';
+import { Bell, Globe, Lock, Trash2, Save, Database, Zap, Download, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useLayout } from '../contexts/LayoutContext';
 import { supabase } from '../lib/supabase';
 
 interface Settings {
@@ -18,7 +17,6 @@ interface Settings {
 export default function Settings() {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { layoutMode, setLayoutMode } = useLayout();
   const [settings, setSettings] = useState<Settings>({
     email_notifications: true,
     weekly_summary: true,
@@ -169,30 +167,6 @@ export default function Settings() {
                     <>
                       <Sun size={14} />
                       <span className="text-xs font-medium text-gray-900 dark:text-white">Light</span>
-                    </>
-                  )}
-                </button>
-              </div>
-              <div className="flex items-center justify-between pt-2">
-                <div>
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">Studio Layout</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    Choose between floating chat or split-view layout
-                  </div>
-                </div>
-                <button
-                  onClick={() => setLayoutMode(layoutMode === 'floating' ? 'split' : 'floating')}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
-                >
-                  {layoutMode === 'split' ? (
-                    <>
-                      <Columns2 size={14} />
-                      <span className="text-xs font-medium text-gray-900 dark:text-white">Split</span>
-                    </>
-                  ) : (
-                    <>
-                      <LayoutGrid size={14} />
-                      <span className="text-xs font-medium text-gray-900 dark:text-white">Float</span>
                     </>
                   )}
                 </button>
