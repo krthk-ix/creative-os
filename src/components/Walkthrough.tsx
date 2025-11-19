@@ -1,43 +1,54 @@
 import { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft, Sparkles, Upload, Settings as SettingsIcon, Zap } from 'lucide-react';
+import { X, ArrowRight } from 'lucide-react';
 
 interface WalkthroughStep {
+  target: string;
   title: string;
   description: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
-  position?: 'center' | 'top' | 'bottom';
+  position: 'top' | 'bottom' | 'left' | 'right';
+  action?: string;
 }
 
 const steps: WalkthroughStep[] = [
   {
-    title: 'Welcome to ShootX!',
-    description: 'Let us show you around. ShootX is your AI-powered creative studio for product photography, models, backgrounds, and more.',
-    icon: Sparkles,
-    position: 'center',
+    target: '[data-walkthrough="menu-button"]',
+    title: 'Open Menu',
+    description: 'Click here to access all features including Projects, Settings, Billing, and more.',
+    position: 'right',
+    action: 'Click to open',
   },
   {
-    title: 'Choose Your Workflow',
-    description: 'Start by selecting a workflow from the sidebar or bottom menu. Choose from Human Model, Virtual Try-On, Color Change, and 7 other AI-powered tools.',
-    icon: Zap,
-    position: 'center',
+    target: '[data-walkthrough="workflow-selector"]',
+    title: 'Select Workflow',
+    description: 'Choose from 10 AI-powered workflows. Start with Human Model or Virtual Try-On.',
+    position: 'bottom',
+    action: 'Click to select',
   },
   {
-    title: 'Upload Your Images',
-    description: 'Upload images from your gallery, take a photo with your camera, or paste directly from your clipboard. We support JPG, PNG, WEBP, and AVIF formats.',
-    icon: Upload,
-    position: 'center',
+    target: '[data-walkthrough="layout-toggle"]',
+    title: 'Switch Layout',
+    description: 'Toggle between floating chat and split-view layouts for your preferred workspace.',
+    position: 'left',
+    action: 'Click to toggle',
   },
   {
-    title: 'Customize Options',
-    description: 'Configure workflow-specific settings like model type, backgrounds, colors, and more. Each workflow has unique options tailored to your needs.',
-    icon: SettingsIcon,
-    position: 'center',
+    target: '[data-walkthrough="upload-area"]',
+    title: 'Upload Images',
+    description: 'Upload from gallery, camera, or paste directly from clipboard.',
+    position: 'top',
   },
   {
-    title: 'Generate & Download',
-    description: 'Click generate to create your AI-powered visuals. Download individual results or export all at once. You can also chain workflows together!',
-    icon: Sparkles,
-    position: 'center',
+    target: '[data-walkthrough="output-settings"]',
+    title: 'Configure Output',
+    description: 'Set number of outputs, format (WEBP, PNG, JPG, AVIF), and generation method.',
+    position: 'top',
+  },
+  {
+    target: '[data-walkthrough="generate-button"]',
+    title: 'Generate',
+    description: 'Click to create your AI-generated visuals. Results appear on the right panel.',
+    position: 'top',
+    action: 'Click to generate',
   },
 ];
 
@@ -47,15 +58,59 @@ interface WalkthroughProps {
 
 export default function Walkthrough({ onComplete }: WalkthroughProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
+  const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     const hasSeenWalkthrough = localStorage.getItem('hasSeenWalkthrough');
-    if (hasSeenWalkthrough) {
-      setShow(false);
+    if (!hasSeenWalkthrough) {
+      setTimeout(() => setShow(true), 1000);
+    } else {
       onComplete();
     }
   }, [onComplete]);
+
+  useEffect(() => {
+    if (!show) return;
+
+    const step = steps[currentStep];
+    const element = document.querySelector(step.target) as HTMLElement;
+
+    if (element) {
+      setTargetElement(element);
+
+      const rect = element.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+      let top = 0;
+      let left = 0;
+
+      switch (step.position) {
+        case 'bottom':
+          top = rect.bottom + scrollTop + 16;
+          left = rect.left + scrollLeft + rect.width / 2;
+          break;
+        case 'top':
+          top = rect.top + scrollTop - 16;
+          left = rect.left + scrollLeft + rect.width / 2;
+          break;
+        case 'right':
+          top = rect.top + scrollTop + rect.height / 2;
+          left = rect.right + scrollLeft + 16;
+          break;
+        case 'left':
+          top = rect.top + scrollTop + rect.height / 2;
+          left = rect.left + scrollLeft - 16;
+          break;
+      }
+
+      setTooltipPosition({ top, left });
+
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [currentStep, show]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -83,21 +138,47 @@ export default function Walkthrough({ onComplete }: WalkthroughProps) {
     onComplete();
   };
 
-  if (!show) return null;
+  if (!show || !targetElement) return null;
 
   const step = steps[currentStep];
-  const Icon = step.icon;
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
     <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]" />
+      {/* Overlay */}
+      <div className="fixed inset-0 z-[100] pointer-events-none">
+        {/* Backdrop with spotlight effect */}
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-      {/* Walkthrough Modal */}
-      <div className="fixed inset-0 z-[101] flex items-center justify-center p-4">
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
-          {/* Progress Bar */}
+        {/* Spotlight cutout */}
+        <div
+          className="absolute border-4 border-brand rounded-lg shadow-2xl pointer-events-auto"
+          style={{
+            top: targetElement.getBoundingClientRect().top - 8,
+            left: targetElement.getBoundingClientRect().left - 8,
+            width: targetElement.getBoundingClientRect().width + 16,
+            height: targetElement.getBoundingClientRect().height + 16,
+            boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.6)',
+          }}
+        />
+      </div>
+
+      {/* Tooltip */}
+      <div
+        className="fixed z-[101] pointer-events-auto"
+        style={{
+          top: tooltipPosition.top,
+          left: tooltipPosition.left,
+          transform: step.position === 'bottom' || step.position === 'top'
+            ? 'translateX(-50%)'
+            : step.position === 'left'
+            ? 'translate(-100%, -50%)'
+            : 'translateY(-50%)',
+          maxWidth: '320px',
+        }}
+      >
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl border-2 border-brand overflow-hidden">
+          {/* Progress bar */}
           <div className="h-1 bg-gray-200 dark:bg-gray-800">
             <div
               className="h-full bg-brand transition-all duration-300"
@@ -105,79 +186,92 @@ export default function Walkthrough({ onComplete }: WalkthroughProps) {
             />
           </div>
 
-          {/* Content */}
-          <div className="p-8">
-            {/* Close Button */}
+          <div className="p-4">
+            {/* Close button */}
             <button
               onClick={handleSkip}
-              className="absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              className="absolute top-3 right-3 p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
             >
-              <X size={20} className="text-gray-600 dark:text-gray-400" />
+              <X size={16} className="text-gray-600 dark:text-gray-400" />
             </button>
 
-            {/* Icon */}
-            <div className="w-16 h-16 bg-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Icon size={32} className="text-brand" />
+            {/* Step counter */}
+            <div className="text-xs font-semibold text-brand mb-2">
+              Step {currentStep + 1} of {steps.length}
             </div>
 
             {/* Title */}
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-3">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 pr-6">
               {step.title}
-            </h2>
+            </h3>
 
             {/* Description */}
-            <p className="text-gray-600 dark:text-gray-400 text-center mb-8 leading-relaxed">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
               {step.description}
             </p>
 
-            {/* Step Indicator */}
-            <div className="flex items-center justify-center gap-2 mb-8">
-              {steps.map((_, index) => (
-                <div
-                  key={index}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    index === currentStep
-                      ? 'w-8 bg-brand'
-                      : index < currentStep
-                      ? 'w-2 bg-brand/50'
-                      : 'w-2 bg-gray-300 dark:bg-gray-700'
-                  }`}
-                />
-              ))}
-            </div>
+            {/* Action hint */}
+            {step.action && (
+              <div className="mb-4 p-2 bg-brand/10 rounded-lg">
+                <p className="text-xs font-medium text-brand flex items-center gap-1.5">
+                  <ArrowRight size={14} />
+                  {step.action}
+                </p>
+              </div>
+            )}
 
             {/* Navigation */}
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-3">
               <button
                 onClick={handlePrevious}
                 disabled={currentStep === 0}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   currentStep === 0
                     ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
               >
-                <ChevronLeft size={20} />
-                Previous
+                Back
               </button>
 
-              <button
-                onClick={handleSkip}
-                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-sm font-medium"
-              >
-                Skip Tour
-              </button>
+              <div className="flex gap-1">
+                {steps.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`h-1.5 rounded-full transition-all ${
+                      index === currentStep
+                        ? 'w-6 bg-brand'
+                        : index < currentStep
+                        ? 'w-1.5 bg-brand/50'
+                        : 'w-1.5 bg-gray-300 dark:bg-gray-700'
+                    }`}
+                  />
+                ))}
+              </div>
 
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-2 bg-brand hover:bg-brand/90 text-white rounded-lg font-medium transition-colors"
+                className="px-4 py-2 bg-brand hover:bg-brand/90 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5"
               >
-                {currentStep === steps.length - 1 ? 'Get Started' : 'Next'}
-                <ChevronRight size={20} />
+                {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
+                <ArrowRight size={16} />
               </button>
             </div>
           </div>
         </div>
+
+        {/* Arrow pointer */}
+        <div
+          className={`absolute w-0 h-0 border-solid ${
+            step.position === 'bottom'
+              ? 'top-0 left-1/2 -translate-x-1/2 -translate-y-full border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-brand'
+              : step.position === 'top'
+              ? 'bottom-0 left-1/2 -translate-x-1/2 translate-y-full border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-brand'
+              : step.position === 'right'
+              ? 'left-0 top-1/2 -translate-y-1/2 -translate-x-full border-t-8 border-b-8 border-r-8 border-t-transparent border-b-transparent border-r-brand'
+              : 'right-0 top-1/2 -translate-y-1/2 translate-x-full border-t-8 border-b-8 border-l-8 border-t-transparent border-b-transparent border-l-brand'
+          }`}
+        />
       </div>
     </>
   );

@@ -83,12 +83,6 @@ export default function Dashboard() {
         {renderView()}
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav
-        activeView={currentView}
-        onViewChange={(view) => setCurrentView(view as View)}
-      />
-
       {/* Settings Menu */}
       <SettingsMenu
         isOpen={isMenuOpen}
