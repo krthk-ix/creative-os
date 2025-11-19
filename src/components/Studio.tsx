@@ -1,4 +1,4 @@
-import ChatInterface from './studio/ChatInterface';
+import StudioWrapper from './StudioWrapper';
 
 interface StudioProps {
   selectedWorkflow: string;
@@ -8,12 +8,10 @@ interface StudioProps {
 
 export default function Studio({ selectedWorkflow, workflowName, onSelectWorkflow }: StudioProps) {
   return (
-    <div className="h-full w-full bg-gray-50 dark:bg-gray-950">
-      <ChatInterface
-        selectedWorkflow={selectedWorkflow}
-        workflowName={workflowName}
-        onSelectWorkflow={onSelectWorkflow}
-      />
-    </div>
+    <StudioWrapper
+      selectedWorkflow={selectedWorkflow}
+      workflowName={workflowName}
+      onSelectWorkflow={onSelectWorkflow}
+    />
   );
 }
